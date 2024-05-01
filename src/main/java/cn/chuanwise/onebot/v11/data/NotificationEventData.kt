@@ -1,0 +1,256 @@
+package cn.chuanwise.onebot.v11.data
+
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+// https://github.com/botuniverse/onebot-11/blob/master/event/notice.md
+@Serializable
+sealed class NotificationEventData: EventData() {
+    @SerialName("notice_type")
+    abstract val noticeType: String
+}
+
+@Serializable
+class FileData(
+    @SerialName("id")
+    val id: String,
+
+    @SerialName("name")
+    val name: String,
+
+    // bytes
+    @SerialName("size")
+    val size: Long,
+
+    // unknown usages
+    @SerialName("busid")
+    val busid: Long,
+)
+
+@Serializable
+class GroupFileUploadEventData(
+    override val time: Long,
+    override val selfID: Long,
+
+    // "notice"
+    override val postType: String,
+
+    // "group_upload"
+    override val noticeType: String,
+
+    @SerialName("group_id")
+    val groupID: Long,
+
+    @SerialName("user_id")
+    val userID: Long,
+
+    @SerialName("file")
+    val file: FileData
+): NotificationEventData()
+
+@Serializable
+class GroupAdminChangedEventData(
+    override val time: Long,
+    override val selfID: Long,
+
+    // "notice"
+    override val postType: String,
+
+    // "group_admin"
+    override val noticeType: String,
+
+    @SerialName("group_id")
+    val groupID: Long,
+
+    @SerialName("user_id")
+    val userID: Long,
+
+    // "set" or "unset"
+    @SerialName("sub_type")
+    val subType: String,
+): NotificationEventData()
+
+@Serializable
+class GroupMemberChangedEventData(
+    override val time: Long,
+    override val selfID: Long,
+
+    // "notice"
+    override val postType: String,
+
+    // "group_decrease" or "group_increase"
+    override val noticeType: String,
+
+    @SerialName("group_id")
+    val groupID: Long,
+
+    @SerialName("user_id")
+    val userID: Long,
+
+    @SerialName("operator_id")
+    val operatorID: Long,
+
+    // "leave", "kick" or "kick_me",
+    // "invite" or "approve"
+    @SerialName("sub_type")
+    val subType: String,
+): NotificationEventData()
+
+@Serializable
+class GroupMuteEventData(
+    override val time: Long,
+    override val selfID: Long,
+
+    // "notice"
+    override val postType: String,
+
+    // "group_ban"
+    override val noticeType: String,
+
+    // "ban" or "lift_ban"
+    @SerialName("sub_type")
+    val subType: String,
+
+    @SerialName("group_id")
+    val groupID: Long,
+
+    @SerialName("user_id")
+    val userID: Long,
+
+    @SerialName("operator_id")
+    val operatorID: Long,
+
+    // seconds
+    @SerialName("duration")
+    val duration: Long,
+): NotificationEventData()
+
+@Serializable
+class NewFriendEventData(
+    override val time: Long,
+    override val selfID: Long,
+
+    // "notice"
+    override val postType: String,
+
+    // "friend_add"
+    override val noticeType: String,
+
+    @SerialName("user_id")
+    val userID: Long,
+): NotificationEventData()
+
+@Serializable
+class GroupMessageRecallEventData(
+    override val time: Long,
+    override val selfID: Long,
+
+    // "notice"
+    override val postType: String,
+
+    // "group_recall"
+    override val noticeType: String,
+
+    @SerialName("group_id")
+    val groupID: Long,
+
+    @SerialName("user_id")
+    val userID: Long,
+
+    @SerialName("operator_id")
+    val operatorID: Long,
+
+    @SerialName("message_id")
+    val messageID: Long,
+): NotificationEventData()
+
+@Serializable
+class FriendMessageRecallEventData(
+    override val time: Long,
+    override val selfID: Long,
+
+    // "notice"
+    override val postType: String,
+
+    // "friend_recall"
+    override val noticeType: String,
+
+    @SerialName("user_id")
+    val userID: Long,
+
+    @SerialName("message_id")
+    val messageID: Long,
+): NotificationEventData()
+
+@Serializable
+class GroupPokeEventData(
+    override val time: Long,
+    override val selfID: Long,
+
+    // "notice"
+    override val postType: String,
+
+    // "notify"
+    override val noticeType: String,
+
+    // "poke"
+    @SerialName("sub_type")
+    val subType: String,
+
+    @SerialName("group_id")
+    val groupID: Long,
+
+    @SerialName("user_id")
+    val userID: Long,
+
+    @SerialName("target_id")
+    val targetID: Long,
+): NotificationEventData()
+
+@Serializable
+class GroupRedPacketLuckyKingEventData(
+    override val time: Long,
+    override val selfID: Long,
+
+    // "notice"
+    override val postType: String,
+
+    // "lucky_king"
+    override val noticeType: String,
+
+    @SerialName("group_id")
+    val groupID: Long,
+
+    // red packet sender
+    @SerialName("user_id")
+    val userID: Long,
+
+    // lucky king
+    @SerialName("target_id")
+    val targetID: Long,
+): NotificationEventData()
+
+@Serializable
+class GroupMemberHonorChangedEventData(
+    override val time: Long,
+    override val selfID: Long,
+
+    // "notice"
+    override val postType: String,
+
+    // "notify"
+    override val noticeType: String,
+
+    @SerialName("sub_type")
+    val subType: String,
+
+    @SerialName("group_id")
+    val groupID: Long,
+
+    @SerialName("user_id")
+    val userID: Long,
+
+    // "talkative", "performer" or "emotion"
+    @SerialName("honor_type")
+    val honorType: String,
+): NotificationEventData()
