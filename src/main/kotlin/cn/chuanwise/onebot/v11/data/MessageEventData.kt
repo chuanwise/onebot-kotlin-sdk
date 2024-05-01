@@ -3,15 +3,7 @@ package cn.chuanwise.onebot.v11.data
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-/**
- * # Message Event Data
- *
- * Message event low-level representation based on
- * [OneBot 11](https://github.com/botuniverse/onebot-11/blob/master/event/message.md).
- *
- * @see GroupMessageEventData
- * @see PrivateMessageEventData
- */
+// https://github.com/botuniverse/onebot-11/blob/master/event/message.md
 @Serializable
 sealed class MessageEventData: EventData() {
     @SerialName("message_type")
@@ -55,7 +47,7 @@ sealed class SenderData {
 }
 
 @Serializable
-class PrivateSenderData(
+data class PrivateSenderData(
     override val userID: Long,
     override val nickname: String,
     override val sex: String,
@@ -86,9 +78,11 @@ class GroupSenderData(
 ) : SenderData()
 
 @Serializable
-class PrivateMessageEventData(
+data class PrivateMessageEventData(
     override val time: Long,
     override val selfID: Long,
+
+    // "message"
     override val postType: String,
     override val messageType: String,
 
@@ -124,13 +118,13 @@ sealed class MessageReceipt {
 }
 
 @Serializable
-class PrivateMessageEventMessageReceipt(
+data class PrivateMessageEventMessageReceipt(
     override val reply: String,
     override val autoEscape: Boolean
 ) : MessageReceipt()
 
 @Serializable
-class AnonymousSenderData(
+data class AnonymousSenderData(
     @SerialName("id")
     val id: Int,
 
@@ -142,7 +136,7 @@ class AnonymousSenderData(
 )
 
 @Serializable
-class GroupMessageEventData(
+data class GroupMessageEventData(
     override val time: Long,
     override val selfID: Long,
     override val postType: String,
@@ -177,7 +171,7 @@ class GroupMessageEventData(
 ) : MessageEventData()
 
 @Serializable
-class GroupMessageMessageReceipt(
+data class GroupMessageMessageReceipt(
     override val reply: String,
     override val autoEscape: Boolean,
 
