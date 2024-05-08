@@ -42,5 +42,5 @@ bin/
 .DS_Store
 
 ### Project ###
-/.idea/
-
+/.idea/*
+!/.idea/copyright

@@ -14,20 +14,6 @@
  * limitations under the License.
  */
 
+@file:JvmName("JSONEventData")
 package cn.chuanwise.onebot.v11.data
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonObject
-
-@Serializable
-sealed class EventData {
-    @SerialName("time")
-    abstract val time: Long
-
-    @SerialName("self_id")
-    abstract val selfID: Long
-
-    @SerialName("post_type")
-    abstract val postType: String
-}
