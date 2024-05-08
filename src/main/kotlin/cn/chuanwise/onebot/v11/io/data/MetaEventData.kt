@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package cn.chuanwise.onebot.v11.data
+package cn.chuanwise.onebot.v11.io.data
 
+import cn.chuanwise.onebot.serialization.Tree
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -47,11 +48,6 @@ data class LifecycleMetaEventData(
     val subType: String
 ): MetaEventData()
 
-@Serializable
-class StatusData(
-)
-
-@Serializable
 data class HeartbeatEventData(
     override val time: Long,
     override val selfID: Long,
@@ -63,7 +59,7 @@ data class HeartbeatEventData(
     override val metaEventType: String,
 
     @SerialName("status")
-    val status: StatusData,
+    val status: Tree?,
 
     @SerialName("interval")
     val interval: Long

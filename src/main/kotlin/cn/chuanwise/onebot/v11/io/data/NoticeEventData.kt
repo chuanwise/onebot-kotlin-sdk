@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package cn.chuanwise.onebot.v11.data
+package cn.chuanwise.onebot.v11.io.data
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 // https://github.com/botuniverse/onebot-11/blob/master/event/notice.md
 @Serializable
-sealed class NotificationEventData: EventData() {
+sealed class NoticeEventData: EventData() {
     @SerialName("notice_type")
     abstract val noticeType: String
 }
@@ -62,7 +62,7 @@ class GroupFileUploadEventData(
 
     @SerialName("file")
     val file: FileData
-): NotificationEventData()
+): NoticeEventData()
 
 @Serializable
 class GroupAdminChangedEventData(
@@ -84,7 +84,7 @@ class GroupAdminChangedEventData(
     // "set" or "unset"
     @SerialName("sub_type")
     val subType: String,
-): NotificationEventData()
+): NoticeEventData()
 
 @Serializable
 class GroupMemberChangedEventData(
@@ -110,7 +110,7 @@ class GroupMemberChangedEventData(
     // "invite" or "approve"
     @SerialName("sub_type")
     val subType: String,
-): NotificationEventData()
+): NoticeEventData()
 
 @Serializable
 class GroupMuteEventData(
@@ -139,7 +139,7 @@ class GroupMuteEventData(
     // seconds
     @SerialName("duration")
     val duration: Long,
-): NotificationEventData()
+): NoticeEventData()
 
 @Serializable
 class NewFriendEventData(
@@ -154,7 +154,7 @@ class NewFriendEventData(
 
     @SerialName("user_id")
     val userID: Long,
-): NotificationEventData()
+): NoticeEventData()
 
 @Serializable
 class GroupMessageRecallEventData(
@@ -178,7 +178,7 @@ class GroupMessageRecallEventData(
 
     @SerialName("message_id")
     val messageID: Long,
-): NotificationEventData()
+): NoticeEventData()
 
 @Serializable
 class FriendMessageRecallEventData(
@@ -196,7 +196,7 @@ class FriendMessageRecallEventData(
 
     @SerialName("message_id")
     val messageID: Long,
-): NotificationEventData()
+): NoticeEventData()
 
 @Serializable
 class GroupPokeEventData(
@@ -221,7 +221,7 @@ class GroupPokeEventData(
 
     @SerialName("target_id")
     val targetID: Long,
-): NotificationEventData()
+): NoticeEventData()
 
 @Serializable
 class GroupRedPacketLuckyKingEventData(
@@ -244,7 +244,7 @@ class GroupRedPacketLuckyKingEventData(
     // lucky king
     @SerialName("target_id")
     val targetID: Long,
-): NotificationEventData()
+): NoticeEventData()
 
 @Serializable
 class GroupMemberHonorChangedEventData(
@@ -269,4 +269,4 @@ class GroupMemberHonorChangedEventData(
     // "talkative", "performer" or "emotion"
     @SerialName("honor_type")
     val honorType: String,
-): NotificationEventData()
+): NoticeEventData()

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package cn.chuanwise.onebot.v11.data
+package cn.chuanwise.onebot.v11.io.data
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -22,12 +22,22 @@ import kotlinx.serialization.Serializable
 // https://github.com/botuniverse/onebot-11/blob/master/message/segment.md
 @Serializable
 sealed class MessageData {
+}
+
+@Serializable
+data class SingleMessageData(
     @SerialName("type")
-    abstract val type: String
+    val type: String,
 
     @SerialName("data")
-    abstract val data: SegmentData
-}
+    val data: SegmentData
+) : MessageData()
+
+@Serializable
+data class ArrayMessageData(
+    @SerialName("data")
+    val data: List<SingleMessageData>
+): MessageData()
 
 @Serializable
 sealed class SegmentData
@@ -36,13 +46,6 @@ sealed class SegmentData
 data class TextData(
     @SerialName("type")
     val text: String
-) : SegmentData()
-
-@Serializable
-data class FaceData(
-    // https://github.com/kyubotics/coolq-http-api/wiki/%E8%A1%A8%E6%83%85-CQ-%E7%A0%81-ID-%E8%A1%A8
-    @SerialName("id")
-    val id: String
 ) : SegmentData()
 
 @Serializable
@@ -77,7 +80,7 @@ data class SoundData(
     val file: String,
 
     @SerialName("type")
-    val magic: Boolean,
+    val magic: Boolean?,
 
     // send only
     @SerialName("url")
@@ -127,6 +130,8 @@ data class AtData(
 
 // RPSData (Rock, Paper, Scissors)
 // DiceData, ShakeData has empty body
+@Serializable
+class EmptyData : SegmentData()
 
 @Serializable
 data class PokeData(
@@ -135,7 +140,7 @@ data class PokeData(
     val type: String,
 
     @SerialName("id")
-    val id: Int,
+    val id: String,
 
     @SerialName("name")
     val name: String?
@@ -177,10 +182,10 @@ data class RecommendationData(
 @Serializable
 data class LocationData(
     @SerialName("lat")
-    val latitude: Double,
+    val lat: String,
 
     @SerialName("lon")
-    val longitude: Double,
+    val lon: String,
 
     // optional if send
     @SerialName("title")
@@ -233,7 +238,7 @@ data class SingleForwardNodeData(
     val nickname: String,
 
     @SerialName("content")
-    val content: String
+    val content: MessageData
 ) : SegmentData()
 
 @Serializable

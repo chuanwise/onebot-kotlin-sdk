@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package cn.chuanwise.onebot.v11.data
+package cn.chuanwise.onebot.v11.io.data
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -56,41 +56,41 @@ sealed class SenderData {
     abstract val nickname: String
 
     @SerialName("sex")
-    abstract val sex: String
+    abstract val sex: String?
 
     @SerialName("age")
-    abstract val age: Int
+    abstract val age: Int?
 }
 
 @Serializable
 data class PrivateSenderData(
     override val userID: Long,
     override val nickname: String,
-    override val sex: String,
-    override val age: Int,
+    override val sex: String?,
+    override val age: Int?,
 ) : SenderData()
 
 @Serializable
 class GroupSenderData(
     override val userID: Long,
     override val nickname: String,
-    override val sex: String,
-    override val age: Int,
+    override val sex: String?,
+    override val age: Int?,
 
     @SerialName("card")
-    val card: String,
+    val card: String?,
 
     @SerialName("area")
-    val area: String,
+    val area: String?,
 
     @SerialName("level")
-    val level: String,
+    val level: String?,
 
     @SerialName("role")
-    val role: String,
+    val role: String?,
 
     @SerialName("title")
-    val title: String,
+    val title: String?,
 ) : SenderData()
 
 @Serializable

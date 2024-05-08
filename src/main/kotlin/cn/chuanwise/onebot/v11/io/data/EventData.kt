@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package cn.chuanwise.onebot.v11.data
+package cn.chuanwise.onebot.v11.io.data
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
