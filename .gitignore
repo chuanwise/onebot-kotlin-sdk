@@ -44,3 +44,4 @@ bin/
 ### Project ###
 /.idea/*
 !/.idea/copyright
+/src/test/resources/bot.json
