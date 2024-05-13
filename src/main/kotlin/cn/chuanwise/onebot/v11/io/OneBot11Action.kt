@@ -39,9 +39,9 @@ import cn.chuanwise.onebot.v11.io.data.action.GroupIDEnableData
 import cn.chuanwise.onebot.v11.io.data.action.GroupIDUserIDEnableData
 import cn.chuanwise.onebot.v11.io.data.action.GroupMemberData
 import cn.chuanwise.onebot.v11.io.data.action.HandleQuickOperationData
+import cn.chuanwise.onebot.v11.io.data.action.IDData
 import cn.chuanwise.onebot.v11.io.data.action.MessageDataWrapper
 import cn.chuanwise.onebot.v11.io.data.action.MessageIDData
-import cn.chuanwise.onebot.v11.io.data.action.SendGroupKickData
 import cn.chuanwise.onebot.v11.io.data.action.SendGroupMessageData
 import cn.chuanwise.onebot.v11.io.data.action.SendLikeData
 import cn.chuanwise.onebot.v11.io.data.action.SendMessageData
@@ -51,6 +51,7 @@ import cn.chuanwise.onebot.v11.io.data.action.SetGroupAddRequestData
 import cn.chuanwise.onebot.v11.io.data.action.SetGroupAnonymousBanData
 import cn.chuanwise.onebot.v11.io.data.action.SetGroupBanData
 import cn.chuanwise.onebot.v11.io.data.action.SetGroupCardData
+import cn.chuanwise.onebot.v11.io.data.action.SetGroupKickData
 import cn.chuanwise.onebot.v11.io.data.action.SetGroupLeaveData
 import cn.chuanwise.onebot.v11.io.data.action.SetGroupNameData
 import cn.chuanwise.onebot.v11.io.data.action.SetGroupSpecialTitleData
@@ -96,13 +97,13 @@ class OneBot11Action<P, R>(
         val GET_MESSAGE = OneBot11Action<MessageIDData, GetMessageData>("get_msg")
 
         // https://github.com/botuniverse/onebot-11/blob/master/api/public.md#get_forward_msg-%E8%8E%B7%E5%8F%96%E5%90%88%E5%B9%B6%E8%BD%AC%E5%8F%91%E6%B6%88%E6%81%AF
-        val GET_FORWARD_MESSAGE = OneBot11Action<MessageIDData, MessageDataWrapper>("get_forward_msg")
+        val GET_FORWARD_MESSAGE = OneBot11Action<IDData, MessageDataWrapper>("get_forward_msg")
 
         // https://github.com/botuniverse/onebot-11/blob/master/api/public.md#send_like-%E5%8F%91%E9%80%81%E5%A5%BD%E5%8F%8B%E8%B5%9E
         val SEND_LIKE = OneBot11Action<SendLikeData, Null>("send_like")
 
         // https://github.com/botuniverse/onebot-11/blob/master/api/public.md#set_group_kick-%E7%BE%A4%E7%BB%84%E8%B8%A2%E4%BA%BA
-        val SET_GROUP_KICK = OneBot11Action<SendGroupKickData, Null>("set_group_kick")
+        val SET_GROUP_KICK = OneBot11Action<SetGroupKickData, Null>("set_group_kick")
 
         // https://github.com/botuniverse/onebot-11/blob/master/api/public.md#set_group_ban-%E7%BE%A4%E7%BB%84%E5%8D%95%E4%BA%BA%E7%A6%81%E8%A8%80
         val SET_GROUP_BAN = OneBot11Action<SetGroupBanData, Null>("set_group_ban")
@@ -117,7 +118,7 @@ class OneBot11Action<P, R>(
         val SET_GROUP_ADMIN = OneBot11Action<GroupIDUserIDEnableData, Null>("set_group_admin")
 
         // https://github.com/botuniverse/onebot-11/blob/master/api/public.md#set_group_anonymous-%E7%BE%A4%E7%BB%84%E5%8C%BF%E5%90%8D
-        val SET_GROUP_ANONYMOUS = OneBot11Action<GroupIDUserIDEnableData, Null>("set_group_anonymous")
+        val SET_GROUP_ANONYMOUS = OneBot11Action<GroupIDEnableData, Null>("set_group_anonymous")
 
         // https://github.com/botuniverse/onebot-11/blob/master/api/public.md#set_group_card-%E8%AE%BE%E7%BD%AE%E7%BE%A4%E5%90%8D%E7%89%87%E7%BE%A4%E5%A4%87%E6%B3%A8
         val SET_GROUP_CARD = OneBot11Action<SetGroupCardData, Null>("set_group_card")
@@ -166,7 +167,7 @@ class OneBot11Action<P, R>(
         val GET_COOKIES = OneBot11Action<DomainData, CookiesData>("get_cookies")
 
         // https://github.com/botuniverse/onebot-11/blob/master/api/public.md#get_csrf_token-%E8%8E%B7%E5%8F%96-csrf-token
-        val GET_CSRF_TOKEN = OneBot11Action<DomainData, GetCSRFTokenData>("get_csrf_token")
+        val GET_CSRF_TOKEN = OneBot11Action<Null, GetCSRFTokenData>("get_csrf_token")
 
         // https://github.com/botuniverse/onebot-11/blob/master/api/public.md#get_credentials-%E8%8E%B7%E5%8F%96-qq-%E7%9B%B8%E5%85%B3%E6%8E%A5%E5%8F%A3%E5%87%AD%E8%AF%81
         val GET_CREDENTIALS = OneBot11Action<DomainData, GetCredentialsData>("get_credentials")

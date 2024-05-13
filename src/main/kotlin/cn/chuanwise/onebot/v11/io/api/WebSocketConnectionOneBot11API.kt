@@ -29,9 +29,6 @@ import cn.chuanwise.onebot.v11.io.data.DATA
 import cn.chuanwise.onebot.v11.io.data.ECHO
 import cn.chuanwise.onebot.v11.io.data.RETCODE
 import cn.chuanwise.onebot.v11.io.data.action.ActionRequestPacket
-import cn.chuanwise.onebot.v11.io.data.action.SendGroupMessageData
-import cn.chuanwise.onebot.v11.io.data.message.CQCodeMessageData
-import cn.chuanwise.onebot.v11.io.data.message.MessageData
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -87,7 +84,7 @@ class WebSocketConnectionOneBot11API(
         }
     }
 
-    override suspend fun <P : Any, R : Any> request(action: OneBot11Action<P, R>, params: P): R {
+    override suspend fun <P, R> request(action: OneBot11Action<P, R>, params: P): R {
         // 1. create channels.
         val channel = Channel<Value>()
         try {
@@ -128,14 +125,6 @@ class WebSocketConnectionOneBot11API(
             channel.close()
         }
     }
-
-    override suspend fun sendGroupMessage(groupID: Long, message: MessageData): Int = request(
-        OneBot11Action.SEND_GROUP_MESSAGE, SendGroupMessageData(
-            groupID = groupID,
-            message = message,
-            autoEscape = (message as? CQCodeMessageData)?.autoEscape ?: false
-        )
-    ).messageID
 
     override fun close() {
         require(connection.unregisterListener(listenerUUID)) { "Fail to detach from connection: $connection" }

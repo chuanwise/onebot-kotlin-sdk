@@ -26,6 +26,11 @@ data class MessageIDData(
     val messageID: Int
 )
 
+data class IDData(
+    @JsonProperty("id")
+    val id: String
+)
+
 data class SendGroupMessageData(
     @JsonProperty("group_id")
     val groupID: Long,
@@ -102,7 +107,7 @@ data class SendLikeData(
     val times: Int,
 )
 
-data class SendGroupKickData(
+data class SetGroupKickData(
     @JsonProperty("group_id")
     val groupID: Long,
 

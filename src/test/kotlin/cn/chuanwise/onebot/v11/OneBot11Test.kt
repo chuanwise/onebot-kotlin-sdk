@@ -18,6 +18,7 @@ package cn.chuanwise.onebot.v11
 
 import cn.chuanwise.onebot.io.connection.ReverseWebSocketConnectionConfiguration
 import cn.chuanwise.onebot.v11.io.api.WebSocketConnectionOneBot11API
+import cn.chuanwise.onebot.v11.io.api.sendGroupMessage
 import cn.chuanwise.onebot.v11.io.connection.ReverseWebSocketConnection
 import cn.chuanwise.onebot.v11.io.data.message.CQCodeMessageData
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
