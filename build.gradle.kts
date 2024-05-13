@@ -16,6 +16,7 @@
 
 plugins {
     kotlin("jvm") version "1.9.10"
+//    kotlin("plugin.serialization") version "1.9.10"
 }
 
 group = "cn.chuanwise"
@@ -27,10 +28,14 @@ repositories {
 
 dependencies {
     val ktorVersion = "2.3.10"
+    implementation("io.ktor:ktor-server-core-jvm:$ktorVersion")
+    implementation("io.ktor:ktor-server-websockets-jvm:$ktorVersion")
+    implementation("io.ktor:ktor-server-netty-jvm:$ktorVersion")
+    implementation("io.ktor:ktor-server-request-validation:$ktorVersion")
+    testImplementation("io.ktor:ktor-server-tests-jvm:$ktorVersion")
+
     implementation("io.ktor:ktor-websockets:$ktorVersion")
     implementation("io.ktor:ktor-client-websockets:$ktorVersion")
-//    implementation("io.ktor:ktor-client-cio:$ktorVersion")
-//    implementation("io.ktor:ktor-client-js:$ktorVersion")
     implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
 
     val log4jVersion = "2.23.1"
@@ -44,11 +49,13 @@ dependencies {
     implementation("org.slf4j:slf4j-api:$slf4jVersion")
     implementation("org.apache.logging.log4j:log4j-slf4j2-impl:$log4jVersion")
 
-    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
     val jacksonVersion = "2.17.1"
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
+
+//    val kotlinxSerializationVersion = "1.5.1"
+//    implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:$kotlinxSerializationVersion")
 
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")

@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-@file:JvmName("Constants")
-package cn.chuanwise.onebot.v11.io.serialization
+@file:JvmName("SerializationConstants")
+
+package cn.chuanwise.onebot.v11.io.data
 
 const val TIME = "time"
 const val SELF_ID = "self_id"
@@ -46,16 +47,26 @@ const val AREA = "area"
 
 const val ANONYMOUS = "anonymous"
 
+const val DELETE = "delete"
+const val KICK = "kick"
+const val AT_SENDER = "at_sender"
+const val BAN = "ban"
+const val BAN_DURATION = "ban_duration"
+
 const val META_EVENT = "meta_event"
 const val META_EVENT_TYPE = "meta_event_type"
 const val LIFECYCLE = "lifecycle"
 const val HEARTBEAT = "heartbeat"
 const val INTERVAL = "interval"
 const val STATUS = "status"
+const val RETCODE = "retcode"
+const val ECHO = "echo"
 
 const val ID = "id"
 const val NAME = "name"
 const val FLAG = "flag"
+const val APPROVE = "approve"
+const val REMARK = "remark"
 
 const val REQUEST = "request"
 
@@ -85,6 +96,7 @@ const val LON = "lon"
 const val CUSTOM = "custom"
 const val AUDIO = "audio"
 const val REPLY = "reply"
+const val AUTO_ESCAPE = "auto_escape"
 const val FORWARD = "forward"
 const val NODE = "node"
 const val XML = "xml"
