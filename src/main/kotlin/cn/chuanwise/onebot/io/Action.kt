@@ -14,17 +14,21 @@
  * limitations under the License.
  */
 
-@file:JvmName("EventDataSerializations")
-package cn.chuanwise.onebot.v11.io.serialization
+package cn.chuanwise.onebot.io
 
-import cn.chuanwise.onebot.serialization.Tree
-import cn.chuanwise.onebot.serialization.primitive
-import cn.chuanwise.onebot.v11.io.data.EventData
+import cn.chuanwise.onebot.v11.io.OneBot11Action
+import com.fasterxml.jackson.core.type.TypeReference
 
-fun Tree.toEventData(): EventData = when (val postType = get(POST_TYPE).primitive.string) {
-    MESSAGE -> toMessageEvent()
-    NOTICE -> toNoticeEvent()
-    REQUEST -> toRequestEvent()
-    META_EVENT -> toMetaEvent()
-    else -> throw IllegalArgumentException("Unknown post type: $postType")
+/**
+ * # Action
+ *
+ * Action represents an action that can be performed by the OneBot implementation.
+ *
+ * @author Chuanwise
+ * @see OneBot11Action
+ */
+interface Action<P, R> {
+    val name: String
+    val paraTypeReference: TypeReference<P>
+    val respTypeReference: TypeReference<R>
 }
