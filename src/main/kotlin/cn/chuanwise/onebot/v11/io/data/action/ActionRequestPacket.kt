@@ -18,9 +18,11 @@ package cn.chuanwise.onebot.v11.io.data.action
 
 import cn.chuanwise.onebot.io.data.JacksonObject
 import cn.chuanwise.onebot.io.data.toPrimitive
+import cn.chuanwise.onebot.v11.io.data.ACTION
 import cn.chuanwise.onebot.v11.io.data.DATA
 import cn.chuanwise.onebot.v11.io.data.ECHO
 import cn.chuanwise.onebot.v11.io.data.IncomingData
+import cn.chuanwise.onebot.v11.io.data.PARAMS
 import cn.chuanwise.onebot.v11.io.data.RETCODE
 import cn.chuanwise.onebot.v11.io.data.STATUS
 import com.fasterxml.jackson.annotation.JsonProperty
@@ -33,28 +35,28 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 
 
 data class ActionRequestPacket<T>(
-    @JsonProperty("action")
+    @JsonProperty(ACTION)
     val action: String,
 
-    @JsonProperty("params")
+    @JsonProperty(PARAMS)
     val params: T? = null,
 
-    @JsonProperty("echo")
+    @JsonProperty(ECHO)
     val echo: String? = null,
 ) : IncomingData
 
 @JsonDeserialize(using = ResponseDataDeserializer::class)
 data class ResponseData<T>(
-    @JsonProperty("status")
+    @JsonProperty(STATUS)
     val status: String,
 
-    @JsonProperty("retcode")
+    @JsonProperty(RETCODE)
     val returnCode: Int,
 
-    @JsonProperty("data")
+    @JsonProperty(DATA)
     val data: T? = null,
 
-    @JsonProperty("echo")
+    @JsonProperty(ECHO)
     val echo: String? = null
 ) : IncomingData
 

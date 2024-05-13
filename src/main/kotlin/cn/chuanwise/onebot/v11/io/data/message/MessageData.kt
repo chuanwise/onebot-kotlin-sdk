@@ -128,15 +128,27 @@ data class SingleMessageData(
     val data: SegmentData
 ) : MessageData()
 
+@JsonSerialize(using = ArrayMessageDataSerializer::class)
 data class ArrayMessageData(
     @JsonProperty(DATA)
     val data: List<SingleMessageData>
 ): MessageData()
 
+object ArrayMessageDataSerializer : StdSerializer<ArrayMessageData>(ArrayMessageData::class.java) {
+    private fun readResolve(): Any = ArrayMessageDataSerializer
+    override fun serialize(value: ArrayMessageData?, gen: JsonGenerator?, provider: SerializerProvider?) {
+        gen?.writeStartArray()
+        value?.data?.forEach {
+            gen?.writeObject(it)
+        }
+        gen?.writeEndArray()
+    }
+}
+
 sealed class SegmentData
 
 data class TextData(
-    @JsonProperty(TYPE)
+    @JsonProperty(TEXT)
     val text: String
 ) : SegmentData()
 
@@ -350,7 +362,6 @@ object MessageDataDeserializer : StdDeserializer<MessageData>(MessageData::class
                     p.readValueAs(SingleMessageData::class.java)
                 }
             )
-
             is ObjectNode -> {
                 val value = JacksonObject(p.codec as ObjectMapper, node)
                 val type = value[TYPE].toPrimitive().toString()
@@ -372,20 +383,17 @@ object MessageDataDeserializer : StdDeserializer<MessageData>(MessageData::class
                         } else {
                             value.deserializeTo<RecommendationData>()
                         }
-
                         REPLY, FORWARD, FACE -> value.deserializeTo<IDTag>()
                         NODE -> if (ID in value) {
                             value.deserializeTo<IDTag>()
                         } else {
                             value.deserializeTo<SingleForwardNodeData>()
                         }
-
                         XML, JSON -> value.deserializeTo<SerializedData>()
                         else -> throw IllegalArgumentException("Unexpected message type: $type")
                     }
                 )
             }
-
             else -> throw IllegalArgumentException("Unexpected message data: $node")
         }
     }

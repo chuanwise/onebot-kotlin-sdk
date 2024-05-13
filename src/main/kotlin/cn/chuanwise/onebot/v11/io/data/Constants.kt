@@ -19,6 +19,7 @@
 package cn.chuanwise.onebot.v11.io.data
 
 const val TIME = "time"
+const val TIMES = "times"
 const val SELF_ID = "self_id"
 const val POST_TYPE = "post_type"
 const val SUB_TYPE = "sub_type"
@@ -32,11 +33,29 @@ const val USER_ID = "user_id"
 const val RAW_MESSAGE = "raw_message"
 const val FONT = "font"
 const val MESSAGE_ID = "message_id"
+const val REAL_ID = "real_id"
+
+const val REJECT_ADD_REQUEST = "reject_add_request"
+const val SPECIAL_TITLE = "special_title"
 
 const val SENDER = "sender"
 const val NICKNAME = "nickname"
+const val AVATAR = "avatar"
+const val DAY_COUNT = "day_count"
+const val DESCRIPTION = "description"
 const val SEX = "sex"
 const val AGE = "age"
+
+const val DOMAIN = "domain"
+const val COOKIES = "cookies"
+const val TOKEN = "token"
+
+const val OUT_FORMAT = "out_format"
+
+const val YES = "yes"
+const val DELAY = "delay"
+const val CONTEXT = "context"
+const val OPERATION = "operation"
 
 const val GROUP = "group"
 const val CARD = "card"
@@ -44,6 +63,18 @@ const val LEVEL = "level"
 const val ROLE = "role"
 const val TITLE = "title"
 const val AREA = "area"
+const val JOIN_TIME = "join_time"
+const val LAST_SENT_TIME = "last_sent_time"
+const val UNFRIENDLY = "unfriendly"
+const val TITLE_EXPIRE_TIME = "title_expire_time"
+const val CARD_CHANGEABLE = "card_changeable"
+
+const val CURRENT_TALKATIVE = "current_talkative"
+const val TALKATIVE_LIST = "talkative_list"
+const val PERFORMER_LIST = "performer_list"
+const val LEGEND_LIST = "legend_list"
+const val STRONG_NEWBIE_LIST = "strong_newbie_list"
+const val EMOTION_LIST = "emotion_list"
 
 const val ANONYMOUS = "anonymous"
 
@@ -61,12 +92,17 @@ const val INTERVAL = "interval"
 const val STATUS = "status"
 const val RETCODE = "retcode"
 const val ECHO = "echo"
+const val ACTION = "action"
+const val PARAMS = "params"
 
 const val ID = "id"
 const val NAME = "name"
 const val FLAG = "flag"
 const val APPROVE = "approve"
 const val REMARK = "remark"
+
+const val REASON = "reason"
+const val NO_CACHE = "no_cache"
 
 const val REQUEST = "request"
 
@@ -111,7 +147,14 @@ const val SIZE = "size"
 const val BUSID = "busid"
 
 const val GROUP_ID = "group_id"
+const val GROUP_NAME = "group_name"
 const val FILE = "file"
+
+const val MEMBER_COUNT = "member_count"
+const val MAX_MEMBER_COUNT = "max_member_count"
+
+const val ENABLE = "enable"
+const val IS_DISMISS = "is_dismiss"
 
 const val GROUP_ADMIN = "group_admin"
 const val GROUP_DECREASE = "group_decrease"

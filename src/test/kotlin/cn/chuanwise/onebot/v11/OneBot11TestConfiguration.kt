@@ -16,6 +16,24 @@
 
 package cn.chuanwise.onebot.v11
 
+data class GroupUser(
+    val groupID: Long,
+    val userID: Long,
+)
+
 data class OneBot11TestConfiguration(
-    val groupID: Long
+    val testSendPrivateMessage: Boolean,
+    val friendUserID: Long,
+    val strangerUserID: Long,
+    val botIsMemberGroupID: Long,
+    val botIsAdminGroupID: Long,
+    val botIsOwnerGroupID: Long,
+    val botIsMemberAndOtherIsMember: GroupUser,
+    val botIsMemberAndOtherIsAdmin: GroupUser,
+    val botIsMemberAndOtherIsOwner: GroupUser,
+    val botIsAdminAndOtherIsMember: GroupUser,
+    val botIsAdminAndOtherIsAdmin: GroupUser,
+    val botIsAdminAndOtherIsOwner: GroupUser,
+    val botIsOwnerAndOtherIsMember: GroupUser,
+    val botIsOwnerAndOtherIsAdmin: GroupUser,
 )
