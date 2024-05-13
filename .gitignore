@@ -45,3 +45,4 @@ bin/
 /.idea/*
 !/.idea/copyright
 /src/test/resources/bot.json
+/src/test/resources/onebot-11-test-configuration.json
