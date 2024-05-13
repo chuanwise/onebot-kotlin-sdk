@@ -120,7 +120,9 @@ class ReverseWebSocketConnection(
         if (currentSession === null) {
             throw IllegalStateException("The connection is not established!")
         }
-        currentSession.send(Frame.Text(configuration.serialization.serialize(value)))
+        val message = configuration.serialization.serialize(value)
+        currentSession.send(Frame.Text(message))
+        logger.debug { "Sent text: $message" }
         return null
     }
 

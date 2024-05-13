@@ -59,7 +59,6 @@ class WebSocketConnectionOneBot11API(
         val optionalRetCode = value.getOptionalNotNull(RETCODE)
         if (optionalRetCode == null) {
             // TODO: handle events.
-            logger.debug { "Received an event: $value." }
         } else {
             // handle responses.
 
@@ -78,9 +77,6 @@ class WebSocketConnectionOneBot11API(
                 return
             }
             channel.send(value.getNullable(DATA))
-
-            // 4. log
-            logger.debug { "Received a response: $value with uuid: $uuid." }
         }
     }
 
