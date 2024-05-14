@@ -16,9 +16,9 @@
 
 package cn.chuanwise.onebot.v11.io.data.message
 
-import cn.chuanwise.onebot.io.data.JacksonObject
 import cn.chuanwise.onebot.io.data.deserializeTo
-import cn.chuanwise.onebot.io.data.toPrimitive
+import cn.chuanwise.onebot.io.data.getNotNull
+import cn.chuanwise.onebot.io.data.getOptionalNotNull
 import cn.chuanwise.onebot.v11.io.data.ANONYMOUS
 import cn.chuanwise.onebot.v11.io.data.AT
 import cn.chuanwise.onebot.v11.io.data.AUTO_ESCAPE
@@ -49,7 +49,6 @@ import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.PropertyNamingStrategies
 import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
@@ -86,10 +85,9 @@ object CQCodeMessageDataDeserializer : StdDeserializer<CQCodeMessageData>(CQCode
         return if (node is TextNode) {
             CQCodeMessageData(p.readValueAs(String::class.java))
         } else if (node is ObjectNode) {
-            val value = JacksonObject(p.codec as ObjectMapper, node)
             CQCodeMessageData(
-                code = value[DATA].toPrimitive().toString(),
-                autoEscape = value[AUTO_ESCAPE].toPrimitive().toBoolean()
+                code = node.getNotNull(DATA).asText(),
+                autoEscape = node.getNotNull(AUTO_ESCAPE).asBoolean()
             )
         } else {
             throw IllegalArgumentException("Unexpected CQCode message data: $node")
@@ -133,6 +131,8 @@ data class TextData(
 
 
 data class ImageData(
+    // receive or send
+    // if sent, it can be path to image, Net URL, file URL and base64 encoded content.
     val file: String,
 
     // "flash" or none
@@ -142,27 +142,27 @@ data class ImageData(
     val url: String?,
 
     // receive only
-    val cache: Boolean?,
+    val cache: Int?,
 
     // receive only
-    val proxy: Boolean?,
+    val proxy: Int?,
 
     // receive only
     val timeout: Long?
 ) : SegmentData()
 
-data class SoundData(
+data class RecordData(
     val file: String,
-    val magic: Boolean?,
+    val magic: Int?,
 
     // send only
     val url: String?,
 
     // receive only
-    val cache: Boolean?,
+    val cache: Int?,
 
     // receive only
-    val proxy: Boolean?,
+    val proxy: Int?,
 
     // receive only
     val timeout: Long?
@@ -175,10 +175,10 @@ data class VideoData(
     val url: String?,
 
     // receive only
-    val cache: Boolean?,
+    val cache: Int?,
 
     // receive only
-    val proxy: Boolean?,
+    val proxy: Int?,
 
     // receive only
     val timeout: Long?
@@ -200,7 +200,16 @@ data class PokeData(
     val name: String?
 ) : SegmentData()
 
-data object AnonymousSendingTag : SegmentData()
+class AnonymousSendingTag private constructor(
+    val ignore: Int
+) : SegmentData() {
+    companion object {
+        val TRUE = AnonymousSendingTag(1)
+        val FALSE = AnonymousSendingTag(0)
+
+        fun of(value: Boolean) = if (value) TRUE else FALSE
+    }
+}
 
 
 data class ShareData(
@@ -288,33 +297,34 @@ object MessageDataDeserializer : StdDeserializer<MessageData>(MessageData::class
                 }
             )
             is ObjectNode -> {
-                val value = JacksonObject(p.codec as ObjectMapper, node)
-                val type = value[TYPE].toPrimitive().toString()
+                val type = node.getNotNull(TYPE).asText()
                 SingleMessageData(
                     type = type,
                     data = when (type) {
-                        TEXT -> value.deserializeTo<TextData>()
-                        IMAGE -> value.deserializeTo<ImageData>()
-                        RECORD -> value.deserializeTo<SoundData>()
-                        VIDEO -> value.deserializeTo<VideoData>()
-                        AT -> value.deserializeTo<AtData>()
+                        TEXT -> node.deserializeTo<TextData>()
+                        IMAGE -> node.deserializeTo<ImageData>()
+                        RECORD -> node.deserializeTo<RecordData>()
+                        VIDEO -> node.deserializeTo<VideoData>()
+                        AT -> node.deserializeTo<AtData>()
                         RPS, DICE, SHAKE, ANONYMOUS -> EmptyData
-                        POKE -> value.deserializeTo<PokeData>()
-                        SHARE -> value.deserializeTo<ShareData>()
-                        CONTACT, GROUP -> value.deserializeTo<RecommendationData>()
-                        LOCATION -> value.deserializeTo<LocationData>()
-                        MUSIC -> if (value[TYPE].toPrimitive().toString() == CUSTOM) {
-                            value.deserializeTo<CustomMusicRecommendationData>()
+                        POKE -> node.deserializeTo<PokeData>()
+                        SHARE -> node.deserializeTo<ShareData>()
+                        CONTACT, GROUP -> node.deserializeTo<RecommendationData>()
+                        LOCATION -> node.deserializeTo<LocationData>()
+                        MUSIC -> if (node.getOptionalNotNull(TYPE).asText() == CUSTOM) {
+                            node.deserializeTo<CustomMusicRecommendationData>()
                         } else {
-                            value.deserializeTo<RecommendationData>()
+                            node.deserializeTo<RecommendationData>()
                         }
-                        REPLY, FORWARD, FACE -> value.deserializeTo<IDTag>()
-                        NODE -> if (ID in value) {
-                            value.deserializeTo<IDTag>()
+
+                        REPLY, FORWARD, FACE -> node.deserializeTo<IDTag>()
+                        NODE -> if (node.has(ID)) {
+                            node.deserializeTo<IDTag>()
                         } else {
-                            value.deserializeTo<SingleForwardNodeData>()
+                            node.deserializeTo<SingleForwardNodeData>()
                         }
-                        XML, JSON -> value.deserializeTo<SerializedData>()
+
+                        XML, JSON -> node.deserializeTo<SerializedData>()
                         else -> throw IllegalArgumentException("Unexpected message type: $type")
                     }
                 )

@@ -16,16 +16,14 @@
 
 package cn.chuanwise.onebot.v11.io.data.event
 
-import cn.chuanwise.onebot.io.data.JacksonObject
 import cn.chuanwise.onebot.io.data.deserializeTo
-import cn.chuanwise.onebot.io.data.toPrimitive
+import cn.chuanwise.onebot.io.data.getNotNull
 import cn.chuanwise.onebot.v11.io.data.GROUP
 import cn.chuanwise.onebot.v11.io.data.MESSAGE_TYPE
 import cn.chuanwise.onebot.v11.io.data.PRIVATE
 import cn.chuanwise.onebot.v11.io.data.message.MessageData
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.PropertyNamingStrategies
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonNaming
@@ -151,11 +149,10 @@ object MessageEventDataDeserializer : StdDeserializer<MessageEventData>(MessageE
     private fun readResolve(): Any = MessageEventDataDeserializer
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): MessageEventData {
         val node = p.codec.readTree<ObjectNode>(p)
-        val value = JacksonObject(p.codec as ObjectMapper, node)
 
-        return when (val messageType = value[MESSAGE_TYPE].toPrimitive().toString()) {
-            PRIVATE -> value.deserializeTo<PrivateMessageEventData>()
-            GROUP -> value.deserializeTo<GroupMessageEventData>()
+        return when (val messageType = node.getNotNull(MESSAGE_TYPE).asText()) {
+            PRIVATE -> node.deserializeTo<PrivateMessageEventData>()
+            GROUP -> node.deserializeTo<GroupMessageEventData>()
             else -> throw IllegalArgumentException("Unexpected message type: $messageType")
         }
     }

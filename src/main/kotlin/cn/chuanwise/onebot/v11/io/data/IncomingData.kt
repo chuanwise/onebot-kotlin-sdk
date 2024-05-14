@@ -16,13 +16,12 @@
 
 package cn.chuanwise.onebot.v11.io.data
 
-import cn.chuanwise.onebot.io.data.JacksonObject
 import cn.chuanwise.onebot.io.data.deserializeTo
+import cn.chuanwise.onebot.io.data.getOptionalNotNull
 import cn.chuanwise.onebot.v11.io.data.action.ResponseData
 import cn.chuanwise.onebot.v11.io.data.event.EventData
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.node.ObjectNode
@@ -40,15 +39,13 @@ object IncomingDataDeserializer : StdDeserializer<IncomingData>(IncomingData::cl
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): IncomingData {
         // 1. incoming message may be event or response
         val node = p.codec.readTree<ObjectNode>(p)
-        val value = JacksonObject(p.codec as ObjectMapper, node)
-
-        val optionalRetCode = value.getOptionalNotNull(RETCODE)
+        val optionalRetCode = node.getOptionalNotNull(RETCODE)
         return if (optionalRetCode === null) {
             // 2. if field "retcode" not present, it is an event.
-            value.deserializeTo<EventData>()
+            node.deserializeTo<EventData>()
         } else {
             // 3. if field "retcode" present, it is a response.
-            value.deserializeTo<ResponseData<*>>()
+            node.deserializeTo<ResponseData<*>>()
         }
     }
 }

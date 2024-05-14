@@ -16,8 +16,8 @@
 
 package cn.chuanwise.onebot.v11.io.data.action
 
-import cn.chuanwise.onebot.io.data.JacksonObject
-import cn.chuanwise.onebot.io.data.toPrimitive
+import cn.chuanwise.onebot.io.data.getNotNull
+import cn.chuanwise.onebot.io.data.getOptionalNullable
 import cn.chuanwise.onebot.v11.io.data.DATA
 import cn.chuanwise.onebot.v11.io.data.ECHO
 import cn.chuanwise.onebot.v11.io.data.IncomingData
@@ -27,7 +27,6 @@ import cn.chuanwise.onebot.v11.io.data.STATUS
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.node.ObjectNode
@@ -55,12 +54,11 @@ object ResponseDataDeserializer : StdDeserializer<ResponseData<*>>(ResponseData:
 
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): ResponseData<*> {
         val node = p.codec.readTree<ObjectNode>(p)
-        val value = JacksonObject(p.codec as ObjectMapper, node)
 
-        val status = value[STATUS].toPrimitive().toString()
-        val retCode = value[RETCODE].toPrimitive().toInt()
-        val echo = value.getOptionalNullable(ECHO)?.toPrimitive()?.toString()
-        val data = value.getOptionalNullable(DATA)
+        val status = node.getNotNull(STATUS).asText()
+        val retCode = node.getNotNull(RETCODE).asInt()
+        val echo = node.getOptionalNullable(ECHO)?.asText()
+        val data = node.getOptionalNullable(DATA)
 
         return ResponseData(status, retCode, data, echo)
     }

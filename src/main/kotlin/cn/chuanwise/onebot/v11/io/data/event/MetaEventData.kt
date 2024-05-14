@@ -16,10 +16,8 @@
 
 package cn.chuanwise.onebot.v11.io.data.event
 
-import cn.chuanwise.onebot.io.data.JacksonObject
-import cn.chuanwise.onebot.io.data.Object
 import cn.chuanwise.onebot.io.data.deserializeTo
-import cn.chuanwise.onebot.io.data.toPrimitive
+import cn.chuanwise.onebot.io.data.getNotNull
 import cn.chuanwise.onebot.v11.io.data.HEARTBEAT
 import cn.chuanwise.onebot.v11.io.data.INTERVAL
 import cn.chuanwise.onebot.v11.io.data.LIFECYCLE
@@ -29,7 +27,6 @@ import cn.chuanwise.onebot.v11.io.data.SUB_TYPE
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.node.ObjectNode
@@ -80,11 +77,10 @@ object MetaEventDataDeserializer : StdDeserializer<MetaEventData>(MetaEventData:
     private fun readResolve(): Any = MetaEventDataDeserializer
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): MetaEventData {
         val node = p.codec.readTree<ObjectNode>(p)
-        val value = JacksonObject(p.codec as ObjectMapper, node)
 
-        return when (val subType = value[META_EVENT_TYPE].toPrimitive().toString()) {
-            LIFECYCLE -> value.deserializeTo<LifecycleMetaEventData>()
-            HEARTBEAT -> value.deserializeTo<HeartbeatEventData>()
+        return when (val subType = node.getNotNull(META_EVENT_TYPE).asText()) {
+            LIFECYCLE -> node.deserializeTo<LifecycleMetaEventData>()
+            HEARTBEAT -> node.deserializeTo<HeartbeatEventData>()
             else -> throw IllegalArgumentException("Unexpected sub type: $subType")
         }
     }

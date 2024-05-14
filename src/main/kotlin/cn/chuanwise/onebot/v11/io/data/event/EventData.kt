@@ -16,9 +16,8 @@
 
 package cn.chuanwise.onebot.v11.io.data.event
 
-import cn.chuanwise.onebot.io.data.JacksonObject
 import cn.chuanwise.onebot.io.data.deserializeTo
-import cn.chuanwise.onebot.io.data.toPrimitive
+import cn.chuanwise.onebot.io.data.getNotNull
 import cn.chuanwise.onebot.v11.io.data.IncomingData
 import cn.chuanwise.onebot.v11.io.data.MESSAGE
 import cn.chuanwise.onebot.v11.io.data.META_EVENT
@@ -27,7 +26,6 @@ import cn.chuanwise.onebot.v11.io.data.POST_TYPE
 import cn.chuanwise.onebot.v11.io.data.REQUEST
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.node.ObjectNode
@@ -49,13 +47,12 @@ object EventDataDeserializer : StdDeserializer<EventData>(EventData::class.java)
     private fun readResolve(): Any = EventDataDeserializer
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): EventData {
         val node = p.codec.readTree<ObjectNode>(p)
-        val value = JacksonObject(p.codec as ObjectMapper, node)
 
-        return when (val postType = value[POST_TYPE].toPrimitive().toString()) {
-            MESSAGE -> value.deserializeTo<MessageEventData>()
-            NOTICE -> value.deserializeTo<NoticeEventData>()
-            REQUEST -> value.deserializeTo<RequestEventData>()
-            META_EVENT -> value.deserializeTo<MessageEventData>()
+        return when (val postType = node.getNotNull(POST_TYPE).asText()) {
+            MESSAGE -> node.deserializeTo<MessageEventData>()
+            NOTICE -> node.deserializeTo<NoticeEventData>()
+            REQUEST -> node.deserializeTo<RequestEventData>()
+            META_EVENT -> node.deserializeTo<MessageEventData>()
             else -> throw IllegalArgumentException("Unknown post type: $postType")
         }
     }

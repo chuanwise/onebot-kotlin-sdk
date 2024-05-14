@@ -16,15 +16,13 @@
 
 package cn.chuanwise.onebot.v11.io.data.event
 
-import cn.chuanwise.onebot.io.data.JacksonObject
 import cn.chuanwise.onebot.io.data.deserializeTo
-import cn.chuanwise.onebot.io.data.toPrimitive
+import cn.chuanwise.onebot.io.data.getNotNull
 import cn.chuanwise.onebot.v11.io.data.FRIEND
 import cn.chuanwise.onebot.v11.io.data.GROUP
 import cn.chuanwise.onebot.v11.io.data.REQUEST_TYPE
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.node.ObjectNode
@@ -92,11 +90,10 @@ object RequestEventDataDeserializer : StdDeserializer<RequestEventData>(RequestE
     private fun readResolve(): Any = RequestEventDataDeserializer
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): RequestEventData {
         val node = p.codec.readTree<ObjectNode>(p)
-        val value = JacksonObject(p.codec as ObjectMapper, node)
 
-        return when (val requestType = value[REQUEST_TYPE].toPrimitive().toString()) {
-            FRIEND -> value.deserializeTo<FriendAddRequestEventData>()
-            GROUP -> value.deserializeTo<GroupAddRequestEventData>()
+        return when (val requestType = node.getNotNull(REQUEST_TYPE).asText()) {
+            FRIEND -> node.deserializeTo<FriendAddRequestEventData>()
+            GROUP -> node.deserializeTo<GroupAddRequestEventData>()
             else -> throw IllegalArgumentException("Unexpected request type: $requestType")
         }
     }

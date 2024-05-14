@@ -16,9 +16,8 @@
 
 package cn.chuanwise.onebot.v11.io.data.event
 
-import cn.chuanwise.onebot.io.data.JacksonObject
 import cn.chuanwise.onebot.io.data.deserializeTo
-import cn.chuanwise.onebot.io.data.toPrimitive
+import cn.chuanwise.onebot.io.data.getNotNull
 import cn.chuanwise.onebot.v11.io.data.FRIEND_ADD
 import cn.chuanwise.onebot.v11.io.data.FRIEND_RECALL
 import cn.chuanwise.onebot.v11.io.data.GROUP_ADMIN
@@ -33,7 +32,6 @@ import cn.chuanwise.onebot.v11.io.data.LUCKY_KING
 import cn.chuanwise.onebot.v11.io.data.NOTICE_TYPE
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.PropertyNamingStrategies
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonNaming
@@ -245,19 +243,18 @@ object NoticeEventDataDeserializer : StdDeserializer<NoticeEventData>(NoticeEven
     private fun readResolve(): Any = NoticeEventDataDeserializer
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): NoticeEventData {
         val node = p.codec.readTree<ObjectNode>(p)
-        val value = JacksonObject(p.codec as ObjectMapper, node)
 
-        return when (val noticeType = value[NOTICE_TYPE].toPrimitive().toString()) {
-            GROUP_UPLOAD -> value.deserializeTo<GroupFileUploadEventData>()
-            GROUP_ADMIN -> value.deserializeTo<GroupAdminChangedEventData>()
-            GROUP_DECREASE, GROUP_INCREASE -> value.deserializeTo<GroupMemberChangedEventData>()
-            GROUP_BAN -> value.deserializeTo<GroupMuteEventData>()
-            FRIEND_ADD -> value.deserializeTo<NewFriendEventData>()
-            GROUP_RECALL -> value.deserializeTo<GroupMessageRecallEventData>()
-            FRIEND_RECALL -> value.deserializeTo<FriendMessageRecallEventData>()
-            GROUP_POKE -> value.deserializeTo<GroupPokeEventData>()
-            LUCKY_KING -> value.deserializeTo<GroupRedPacketLuckyKingEventData>()
-            HONOR -> value.deserializeTo<GroupMemberHonorChangedEventData>()
+        return when (val noticeType = node.getNotNull(NOTICE_TYPE).asText()) {
+            GROUP_UPLOAD -> node.deserializeTo<GroupFileUploadEventData>()
+            GROUP_ADMIN -> node.deserializeTo<GroupAdminChangedEventData>()
+            GROUP_DECREASE, GROUP_INCREASE -> node.deserializeTo<GroupMemberChangedEventData>()
+            GROUP_BAN -> node.deserializeTo<GroupMuteEventData>()
+            FRIEND_ADD -> node.deserializeTo<NewFriendEventData>()
+            GROUP_RECALL -> node.deserializeTo<GroupMessageRecallEventData>()
+            FRIEND_RECALL -> node.deserializeTo<FriendMessageRecallEventData>()
+            GROUP_POKE -> node.deserializeTo<GroupPokeEventData>()
+            LUCKY_KING -> node.deserializeTo<GroupRedPacketLuckyKingEventData>()
+            HONOR -> node.deserializeTo<GroupMemberHonorChangedEventData>()
             else -> throw IllegalArgumentException("Unexpected notice type: $noticeType")
         }
     }
