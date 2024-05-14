@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+@file:JvmName("OneBot11APIs")
 package cn.chuanwise.onebot.v11.io.api
 
-import cn.chuanwise.onebot.io.data.Null
 import cn.chuanwise.onebot.v11.io.OneBot11Action
 import cn.chuanwise.onebot.v11.io.data.action.DelayData
 import cn.chuanwise.onebot.v11.io.data.action.DomainData
@@ -280,7 +280,7 @@ suspend fun OneBot11API.setGroupAddRequest(flag: String, subType: String, approv
  * @see [OneBot11Action.GET_LOGIN_INFO]
  */
 suspend fun OneBot11API.getLoginInfo() = request(
-    OneBot11Action.GET_LOGIN_INFO, Null
+    OneBot11Action.GET_LOGIN_INFO, Unit
 )
 
 /**
@@ -307,14 +307,14 @@ suspend fun OneBot11API.getGroupInfo(groupID: Long, noCache: Boolean) = request(
  * @see [OneBot11Action.GET_FRIEND_LIST]
  */
 suspend fun OneBot11API.getFriendList() = request(
-    OneBot11Action.GET_FRIEND_LIST, Null
+    OneBot11Action.GET_FRIEND_LIST, Unit
 )
 
 /**
  * @see [OneBot11Action.GET_GROUP_LIST]
  */
 suspend fun OneBot11API.getGroupList() = request(
-    OneBot11Action.GET_GROUP_LIST, Null
+    OneBot11Action.GET_GROUP_LIST, Unit
 )
 
 /**
@@ -345,7 +345,7 @@ suspend fun OneBot11API.getCookies(domain: String) = request(
  * @see [OneBot11Action.GET_CSRF_TOKEN]
  */
 suspend fun OneBot11API.getCsrfToken() = request(
-    OneBot11Action.GET_CSRF_TOKEN, Null
+    OneBot11Action.GET_CSRF_TOKEN, Unit
 )
 
 /**
@@ -378,28 +378,28 @@ suspend fun OneBot11API.getImage(file: String) = request(
  * @see [OneBot11Action.CAN_SEND_IMAGE]
  */
 suspend fun OneBot11API.canSendImage() = request(
-    OneBot11Action.CAN_SEND_IMAGE, Null
+    OneBot11Action.CAN_SEND_IMAGE, Unit
 )
 
 /**
  * @see [OneBot11Action.CAN_SEND_RECORD]
  */
 suspend fun OneBot11API.canSendRecord() = request(
-    OneBot11Action.CAN_SEND_RECORD, Null
+    OneBot11Action.CAN_SEND_RECORD, Unit
 )
 
 /**
  * @see [OneBot11Action.GET_STATUS]
  */
 suspend fun OneBot11API.getStatus() = request(
-    OneBot11Action.GET_STATUS, Null
+    OneBot11Action.GET_STATUS, Unit
 )
 
 /**
  * @see [OneBot11Action.GET_VERSION_INFO]
  */
 suspend fun OneBot11API.getVersionInfo() = request(
-    OneBot11Action.GET_VERSION_INFO, Null
+    OneBot11Action.GET_VERSION_INFO, Unit
 )
 
 /**
@@ -413,5 +413,5 @@ suspend fun OneBot11API.setRestart(delay: Int) = request(
  * @see [OneBot11Action.CLEAN_CACHE]
  */
 suspend fun OneBot11API.cleanCache() = request(
-    OneBot11Action.CLEAN_CACHE, Null
+    OneBot11Action.CLEAN_CACHE, Unit
 )
