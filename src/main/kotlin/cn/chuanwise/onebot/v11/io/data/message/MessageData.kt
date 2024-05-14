@@ -21,52 +21,39 @@ import cn.chuanwise.onebot.io.data.deserializeTo
 import cn.chuanwise.onebot.io.data.toPrimitive
 import cn.chuanwise.onebot.v11.io.data.ANONYMOUS
 import cn.chuanwise.onebot.v11.io.data.AT
-import cn.chuanwise.onebot.v11.io.data.AUDIO
 import cn.chuanwise.onebot.v11.io.data.AUTO_ESCAPE
-import cn.chuanwise.onebot.v11.io.data.CACHE
 import cn.chuanwise.onebot.v11.io.data.CONTACT
-import cn.chuanwise.onebot.v11.io.data.CONTENT
 import cn.chuanwise.onebot.v11.io.data.CUSTOM
 import cn.chuanwise.onebot.v11.io.data.DATA
 import cn.chuanwise.onebot.v11.io.data.DICE
 import cn.chuanwise.onebot.v11.io.data.FACE
-import cn.chuanwise.onebot.v11.io.data.FILE
 import cn.chuanwise.onebot.v11.io.data.FORWARD
 import cn.chuanwise.onebot.v11.io.data.GROUP
 import cn.chuanwise.onebot.v11.io.data.ID
 import cn.chuanwise.onebot.v11.io.data.IMAGE
 import cn.chuanwise.onebot.v11.io.data.JSON
-import cn.chuanwise.onebot.v11.io.data.LAT
 import cn.chuanwise.onebot.v11.io.data.LOCATION
-import cn.chuanwise.onebot.v11.io.data.LON
 import cn.chuanwise.onebot.v11.io.data.MUSIC
-import cn.chuanwise.onebot.v11.io.data.NAME
-import cn.chuanwise.onebot.v11.io.data.NICKNAME
 import cn.chuanwise.onebot.v11.io.data.NODE
 import cn.chuanwise.onebot.v11.io.data.POKE
-import cn.chuanwise.onebot.v11.io.data.PROXY
-import cn.chuanwise.onebot.v11.io.data.QQ
 import cn.chuanwise.onebot.v11.io.data.RECORD
 import cn.chuanwise.onebot.v11.io.data.REPLY
 import cn.chuanwise.onebot.v11.io.data.RPS
 import cn.chuanwise.onebot.v11.io.data.SHAKE
 import cn.chuanwise.onebot.v11.io.data.SHARE
 import cn.chuanwise.onebot.v11.io.data.TEXT
-import cn.chuanwise.onebot.v11.io.data.TIMEOUT
-import cn.chuanwise.onebot.v11.io.data.TITLE
 import cn.chuanwise.onebot.v11.io.data.TYPE
-import cn.chuanwise.onebot.v11.io.data.URL
-import cn.chuanwise.onebot.v11.io.data.USER_ID
 import cn.chuanwise.onebot.v11.io.data.VIDEO
 import cn.chuanwise.onebot.v11.io.data.XML
-import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.PropertyNamingStrategies
 import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonNaming
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.node.ArrayNode
@@ -83,6 +70,7 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer
  *
  * @author Chuanwise
  */
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy::class)
 @JsonDeserialize(using = MessageDataDeserializer::class)
 sealed class MessageData
 
@@ -90,8 +78,6 @@ sealed class MessageData
 @JsonDeserialize(using = CQCodeMessageDataDeserializer::class)
 data class CQCodeMessageData(
     val code: String,
-
-    @JsonProperty(AUTO_ESCAPE)
     val autoEscape: Boolean = false
 ) : MessageData()
 
@@ -121,16 +107,12 @@ object CQCodeMessageDataSerializer : StdSerializer<CQCodeMessageData>(CQCodeMess
 }
 
 data class SingleMessageData(
-    @JsonProperty(TYPE)
     val type: String,
-
-    @JsonProperty(DATA)
     val data: SegmentData
 ) : MessageData()
 
 @JsonSerialize(using = ArrayMessageDataSerializer::class)
 data class ArrayMessageData(
-    @JsonProperty(DATA)
     val data: List<SingleMessageData>
 ): MessageData()
 
@@ -148,84 +130,64 @@ object ArrayMessageDataSerializer : StdSerializer<ArrayMessageData>(ArrayMessage
 sealed class SegmentData
 
 data class TextData(
-    @JsonProperty(TEXT)
     val text: String
 ) : SegmentData()
 
 
 data class ImageData(
-    @JsonProperty(FILE)
     val file: String,
 
     // "flash" or none
-    @JsonProperty(TYPE)
     val type: String?,
 
     // send only
-    @JsonProperty(URL)
     val url: String?,
 
     // receive only
-    @JsonProperty(CACHE)
     val cache: Boolean?,
 
     // receive only
-    @JsonProperty(PROXY)
     val proxy: Boolean?,
 
     // receive only
-    @JsonProperty(TIMEOUT)
     val timeout: Long?
 ) : SegmentData()
 
 data class SoundData(
-    @JsonProperty(FILE)
     val file: String,
-
-    @JsonProperty(TYPE)
     val magic: Boolean?,
 
     // send only
-    @JsonProperty(URL)
     val url: String?,
 
     // receive only
-    @JsonProperty(CACHE)
     val cache: Boolean?,
 
     // receive only
-    @JsonProperty(PROXY)
     val proxy: Boolean?,
 
     // receive only
-    @JsonProperty(TIMEOUT)
     val timeout: Long?
 ) : SegmentData()
 
 data class VideoData(
-    @JsonProperty(FILE)
     val file: String,
 
     // send only
-    @JsonProperty(URL)
     val url: String?,
 
     // receive only
-    @JsonProperty(CACHE)
     val cache: Boolean?,
 
     // receive only
-    @JsonProperty(PROXY)
     val proxy: Boolean?,
 
     // receive only
-    @JsonProperty(TIMEOUT)
     val timeout: Long?
 ) : SegmentData()
 
 data class AtData(
     // qq code or "all"
-    @JsonProperty(QQ)
     val qq: String
 ) : SegmentData()
 
@@ -235,13 +197,8 @@ data object EmptyData : SegmentData()
 
 data class PokeData(
     // https://github.com/mamoe/mirai/blob/f5eefae7ecee84d18a66afce3f89b89fe1584b78/mirai-core/src/commonMain/kotlin/net.mamoe.mirai/message/data/HummerMessage.kt#L49
-    @JsonProperty(TYPE)
     val type: String,
-
-    @JsonProperty(ID)
     val id: String,
-
-    @JsonProperty(NAME)
     val name: String?
 ) : SegmentData()
 
@@ -249,19 +206,14 @@ data object AnonymousSendingTag : SegmentData()
 
 
 data class ShareData(
-    @JsonProperty(URL)
     val url: String,
-
-    @JsonProperty(TITLE)
     val title: String,
 
     // optional if send
-    @JsonProperty(CONTENT)
     val content: String?,
 
     // optional if send
     // image url
-    @JsonProperty(IMAGE)
     val image: String?
 ) : SegmentData()
 
@@ -269,87 +221,62 @@ data class ShareData(
 data class RecommendationData(
     // "qq", "group"
     // "qq", "163", "xm"
-    @JsonProperty(TYPE)
     val type: String,
-
-    @JsonProperty(NICKNAME)
     val id: String,
 ) : SegmentData()
 
 
 data class LocationData(
-    @JsonProperty(LAT)
     val lat: String,
-
-    @JsonProperty(LON)
     val lon: String,
 
     // optional if send
-    @JsonProperty(TITLE)
     val title: String?,
 
     // optional if send
-    @JsonProperty(CONTENT)
     val content: String?
 ) : SegmentData()
 
 
 data class CustomMusicRecommendationData(
     // "custom"
-    @JsonProperty(TYPE)
     val type: String?,
 
     // jump url
-    @JsonProperty(URL)
     val url: String?,
 
     // audio url
-    @JsonProperty(AUDIO)
     val audio: String,
 
     // title url
-    @JsonProperty(TITLE)
     val title: String,
-
-    @JsonProperty(CONTENT)
     val content: String,
 
     // cover url
-    @JsonProperty(IMAGE)
     val image: String,
 ) : SegmentData()
 
 
 data class IDTag(
-    @JsonProperty(ID)
     val id: String
 ) : SegmentData()
 
 
 data class SingleForwardNodeData(
-    @JsonProperty(USER_ID)
     val userID: String,
-
-    @JsonProperty(NICKNAME)
     val nickname: String,
-
-    @JsonProperty(CONTENT)
     val content: MessageData
 ) : SegmentData()
 
 
 data class MultiForwardNodeData(
-    @JsonProperty(ID)
     val id: String,
-
-    @JsonProperty(CONTENT)
     val content: List<SegmentData>
 ) : SegmentData()
 
 
 data class SerializedData(
     // xml or json
-    @JsonProperty(DATA)
     val data: String
 ) : SegmentData()
 

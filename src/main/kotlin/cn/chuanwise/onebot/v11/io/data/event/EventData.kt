@@ -25,9 +25,6 @@ import cn.chuanwise.onebot.v11.io.data.META_EVENT
 import cn.chuanwise.onebot.v11.io.data.NOTICE
 import cn.chuanwise.onebot.v11.io.data.POST_TYPE
 import cn.chuanwise.onebot.v11.io.data.REQUEST
-import cn.chuanwise.onebot.v11.io.data.SELF_ID
-import cn.chuanwise.onebot.v11.io.data.TIME
-import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -45,13 +42,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode
  */
 @JsonDeserialize(using = EventDataDeserializer::class)
 sealed class EventData : IncomingData {
-    @get:JsonProperty(TIME)
     abstract val time: Long
-
-    @get:JsonProperty(SELF_ID)
     abstract val selfID: Long
-
-    @get:JsonProperty(POST_TYPE)
     abstract val postType: String
 }
 

@@ -42,7 +42,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode
  */
 @JsonDeserialize(using = MetaEventDataDeserializer::class)
 sealed class MetaEventData : EventData() {
-    @get:JsonProperty(META_EVENT_TYPE)
     abstract val metaEventType: String
 }
 
