@@ -44,5 +44,5 @@ bin/
 ### Project ###
 /.idea/*
 !/.idea/copyright
-/src/test/resources/bot.json
-/src/test/resources/onebot-11-test-configuration.json
+/src/test/resources/configurations/bot.json
+/src/test/resources/configurations/onebot-11-test-configuration.json

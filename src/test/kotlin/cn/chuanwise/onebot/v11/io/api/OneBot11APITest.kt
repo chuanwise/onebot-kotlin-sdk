@@ -41,7 +41,8 @@ internal class OneBot11APITest {
         @JvmStatic
         @BeforeAll
         fun beforeAll() {
-            connectionConfiguration = OneBot11APITest::class.java.classLoader.getResourceAsStream("bot.json")?.use {
+            connectionConfiguration =
+                OneBot11APITest::class.java.classLoader.getResourceAsStream("configurations/bot.json")?.use {
                 jacksonObjectMapper().readValue(it, ReverseWebSocketConnectionConfiguration::class.java)
             } ?: throw IllegalStateException(
                 "Cannot find `bot.json` in the test resource directory! " +
@@ -49,7 +50,8 @@ internal class OneBot11APITest {
             )
 
             testConfiguration =
-                OneBot11APITest::class.java.classLoader.getResourceAsStream("onebot-11-test-configuration.json")?.use {
+                OneBot11APITest::class.java.classLoader.getResourceAsStream("configurations/onebot-11-test-configuration.json")
+                    ?.use {
                     jacksonObjectMapper().readValue(it, OneBot11TestConfiguration::class.java)
                 } ?: throw IllegalStateException(
                     "Cannot find `onebot11.json` in the test resource directory! " +
