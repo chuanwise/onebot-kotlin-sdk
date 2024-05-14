@@ -340,7 +340,7 @@ abstract class WebSocketConnectionAPI(
     }
 }
 
-class BackwardWebSocketConnectionConfiguration(
+class BackwardWebSocketConnectionConfiguration @JvmOverloads constructor(
     var host: String,
     var port: Int,
     var path: String,
