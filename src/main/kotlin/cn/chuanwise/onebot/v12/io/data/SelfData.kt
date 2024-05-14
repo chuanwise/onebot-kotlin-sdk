@@ -19,8 +19,6 @@ package cn.chuanwise.onebot.v12.io.data
 import com.fasterxml.jackson.annotation.JsonProperty
 
 /**
- * # Self Data
- *
  * Self data used to identify the bot in multi-bots shared connections in
  * [OneBot 12](https://12.onebot.dev/connect/data-protocol/basic-types/).
  *

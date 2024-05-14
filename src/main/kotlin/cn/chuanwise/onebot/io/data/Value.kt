@@ -28,8 +28,6 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 
 /**
- * # Value
- *
  * Value is a tool to read serializable data.
  *
  * @author Chuanwise

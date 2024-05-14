@@ -35,8 +35,6 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.node.ObjectNode
 
 /**
- * # Meta Event Data
- *
  * Meta event low-level representation based on
  * [OneBot 11 Meta Event](https://github.com/botuniverse/onebot-11/blob/master/event/meta.md).
  */

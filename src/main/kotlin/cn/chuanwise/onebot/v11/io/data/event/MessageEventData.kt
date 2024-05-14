@@ -33,8 +33,6 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.node.ObjectNode
 
 /**
- * # Message Event Data
- *
  * Message event data a representation of message event packet data defined in
  * [OneBot 11 Message Event](https://github.com/botuniverse/onebot-11/blob/master/event/message.md).
  *

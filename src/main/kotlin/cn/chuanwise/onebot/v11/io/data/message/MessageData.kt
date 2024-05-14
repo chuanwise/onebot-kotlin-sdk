@@ -63,8 +63,6 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer
 
 
 /**
- * # Message Data
- *
  * Message low-level representation based on
  * [OneBot 11 Message Data](https://github.com/botuniverse/onebot-11/blob/master/message/segment.md).
  *

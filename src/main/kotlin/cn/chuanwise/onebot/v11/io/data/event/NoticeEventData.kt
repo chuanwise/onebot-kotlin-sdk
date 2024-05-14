@@ -42,8 +42,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 
 
 /**
- * # Notice Event Data
- *
  * Notice event low-level representation based on
  * [OneBot 11 Notice Event](https://github.com/botuniverse/onebot-11/blob/master/event/notice.md).
  *

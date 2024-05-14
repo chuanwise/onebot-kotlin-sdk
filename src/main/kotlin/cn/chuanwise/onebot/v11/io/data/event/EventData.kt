@@ -33,8 +33,6 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.node.ObjectNode
 
 /**
- * # Event Data
- *
  * Event low-level representation based on
  * [OneBot 11](https://github.com/botuniverse/onebot-11/blob/master/event).
  *

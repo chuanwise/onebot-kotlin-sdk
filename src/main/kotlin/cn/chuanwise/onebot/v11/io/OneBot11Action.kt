@@ -60,8 +60,6 @@ import cn.chuanwise.onebot.v11.io.data.event.PrivateSenderData
 import com.fasterxml.jackson.core.type.TypeReference
 
 /**
- * # OneBot 11 Action
- *
  * Defined the action of [OneBot 11](https://github.com/botuniverse/onebot-11/blob/master/api/public.md).
  *
  * Each one is corresponding to an object, which allows to restrict the parameter and response type in

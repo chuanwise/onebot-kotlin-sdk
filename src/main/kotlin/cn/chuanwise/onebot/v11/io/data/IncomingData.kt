@@ -28,8 +28,6 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.node.ObjectNode
 
 /**
- * # Incoming Data
- *
  * Marked interface for incoming data.
  *
  * @author Chuanwise

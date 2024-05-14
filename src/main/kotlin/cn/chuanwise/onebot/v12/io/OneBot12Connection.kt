@@ -19,8 +19,6 @@ package cn.chuanwise.onebot.v12.io
 import cn.chuanwise.onebot.v12.io.data.SelfData
 
 /**
- * # OneBot 12 Connection
- *
  * OneBot 12 connection provides a higher level abstraction for the connection between
  * applications and OneBot implementations.
  *

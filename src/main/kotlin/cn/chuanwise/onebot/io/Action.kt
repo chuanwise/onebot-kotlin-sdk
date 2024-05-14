@@ -20,8 +20,6 @@ import cn.chuanwise.onebot.v11.io.OneBot11Action
 import com.fasterxml.jackson.core.type.TypeReference
 
 /**
- * # Action
- *
  * Action represents an action that can be performed by the OneBot implementation.
  *
  * @author Chuanwise

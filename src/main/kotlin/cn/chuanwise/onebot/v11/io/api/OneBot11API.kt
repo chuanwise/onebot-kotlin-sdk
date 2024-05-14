@@ -48,8 +48,6 @@ import cn.chuanwise.onebot.v11.io.data.message.CQCodeMessageData
 import cn.chuanwise.onebot.v11.io.data.message.MessageData
 
 /**
- * # OneBot 11 API
- *
  * Defined the API of [OneBot 11](https://github.com/botuniverse/onebot-11/blob/master/api/public.md),
  * each one is corresponding to a method.
  *

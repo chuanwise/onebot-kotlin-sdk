@@ -48,8 +48,6 @@ sealed interface ConnectionConfiguration {
 }
 
 /**
- * # Connection
- *
  * Connection is a channel that can send and receive data.
  *
  * @author Chuanwise
