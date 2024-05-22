@@ -18,31 +18,37 @@ plugins {
     kotlin("jvm") version "1.9.10"
 }
 
-allprojects {
-    group = "cn.chuanwise"
-    version = "0.1.0-SNAPSHOT"
-}
-
 repositories {
     mavenCentral()
 }
 
 dependencies {
+    api(project(":onebot-kotlin-lib-app"))
+    api(project(":onebot-11-kotlin-lib"))
+
+    testApi(project(":onebot-kotlin-lib-app"))
+    testApi(project(":onebot-11-kotlin-lib"))
+
+    compileOnly(project(":onebot-kotlin-lib-ws"))
+    compileOnly(project(":onebot-kotlin-lib-http"))
+    testImplementation(project(":onebot-kotlin-lib-ws"))
+    testImplementation(project(":onebot-kotlin-lib-http"))
+
     val log4jVersion: String by rootProject
     val kotlinLoggingVersion: String by rootProject
     val slf4jVersion: String by rootProject
     implementation("io.github.oshai:kotlin-logging-jvm:$kotlinLoggingVersion")
-    implementation("org.apache.logging.log4j:log4j-api:$log4jVersion")
-    runtimeOnly("org.apache.logging.log4j:log4j-core:$log4jVersion")
+
+    testImplementation("org.slf4j:slf4j-api:$slf4jVersion")
+    testImplementation("org.apache.logging.log4j:log4j-api:$log4jVersion")
+    testImplementation("org.apache.logging.log4j:log4j-slf4j2-impl:$log4jVersion")
     testRuntimeOnly("org.apache.logging.log4j:log4j-core:$log4jVersion")
 
-    implementation("org.slf4j:slf4j-api:$slf4jVersion")
-    implementation("org.apache.logging.log4j:log4j-slf4j2-impl:$log4jVersion")
-
-    val jacksonVersion = "2.17.1"
-    implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
-    implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
+    val ktorVersion: String by rootProject
+    implementation("io.ktor:ktor-server-core-jvm:$ktorVersion")
+    implementation("io.ktor:ktor-server-websockets-jvm:$ktorVersion")
+    implementation("io.ktor:ktor-server-netty-jvm:$ktorVersion")
+    implementation("io.ktor:ktor-websockets:$ktorVersion")
 
     val junitVersion: String by rootProject
     testImplementation(platform("org.junit:junit-bom:$junitVersion"))

@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-rootProject.name = "onebot-kotlin-sdk"
-include("onebot-kotlin-sdk-app")
-include("onebot-kotlin-sdk-impl")
-include("onebot-11-kotlin-sdk-app")
-include("onebot-11-kotlin-sdk-impl")
-include("onebot-11-kotlin-lib")
-include("onebot-kotlin-lib-ws")
-include("onebot-kotlin-lib-http")
-include("onebot-kotlin-lib-app")
-include("onebot-kotlin-lib-impl")
-include("onebot-kotlin-lib")
-include("onebot-11-kotlin-lib-app")
+@file:JvmName("OneBot11Constants")
+
+package cn.chuanwise.onebot.lib.v11.data
+
+const val FAILED = "failed"
+const val OK = "ok"
+
+const val ASYNC = "async"
+
+const val UNSUPPORTED_OPERATION_RET_CODE = 1404
+const val BAD_REQUEST_RET_CODE = 1400
+const val SUCCESS_RET_CODE = 0
+

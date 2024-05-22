@@ -44,5 +44,4 @@ bin/
 ### Project ###
 /.idea/*
 !/.idea/copyright
-/src/test/resources/configurations/bot.json
-/src/test/resources/configurations/onebot-11-test-configuration.json
+/onebot-11-kotlin-lib-app/src/test/resources/configurations.json

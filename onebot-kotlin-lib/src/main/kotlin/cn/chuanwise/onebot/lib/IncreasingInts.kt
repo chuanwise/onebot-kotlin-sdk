@@ -14,15 +14,22 @@
  * limitations under the License.
  */
 
-rootProject.name = "onebot-kotlin-sdk"
-include("onebot-kotlin-sdk-app")
-include("onebot-kotlin-sdk-impl")
-include("onebot-11-kotlin-sdk-app")
-include("onebot-11-kotlin-sdk-impl")
-include("onebot-11-kotlin-lib")
-include("onebot-kotlin-lib-ws")
-include("onebot-kotlin-lib-http")
-include("onebot-kotlin-lib-app")
-include("onebot-kotlin-lib-impl")
-include("onebot-kotlin-lib")
-include("onebot-11-kotlin-lib-app")
+package cn.chuanwise.onebot.lib
+
+class IncreasingInts(
+    private val bound: Int? = null
+) : Iterable<Int> {
+
+    inner class IncreasingIntsIterator(
+        private var current: Int = 0
+    ) : Iterator<Int> {
+
+        override fun hasNext(): Boolean = hasNext(current)
+
+        override fun next(): Int = current++
+    }
+
+    override fun iterator(): Iterator<Int> = IncreasingIntsIterator()
+
+    fun hasNext(current: Int) = if (bound !== null) current <= bound else true
+}

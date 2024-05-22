@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-rootProject.name = "onebot-kotlin-sdk"
-include("onebot-kotlin-sdk-app")
-include("onebot-kotlin-sdk-impl")
-include("onebot-11-kotlin-sdk-app")
-include("onebot-11-kotlin-sdk-impl")
-include("onebot-11-kotlin-lib")
-include("onebot-kotlin-lib-ws")
-include("onebot-kotlin-lib-http")
-include("onebot-kotlin-lib-app")
-include("onebot-kotlin-lib-impl")
-include("onebot-kotlin-lib")
-include("onebot-11-kotlin-lib-app")
+package cn.chuanwise.onebot.lib
+
+import kotlinx.coroutines.CoroutineScope
+
+/**
+ * Connection is a bidirectional channel of objects.
+ *
+ * @author Chuanwise
+ */
+interface Connection : AutoCloseable, CoroutineScope {
+    suspend fun <P, R> call(expect: Expect<P, R>, params: P): R
+    val packBus: PackBus
+}

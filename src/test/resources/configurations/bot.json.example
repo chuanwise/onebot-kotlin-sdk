@@ -1,6 +1,0 @@
-{
-  "host": "localhost",
-  "port": 8081,
-  "path": "/onebot/v11/ws",
-  "accessToken": "${access-token-here}"
-}

@@ -1,0 +1,50 @@
+{
+  "webSocketAppConnection": {
+    "host": ${host},
+    "port": ${port},
+    "accessToken": ${accessToken}
+  },
+  "reverseWebSocketAppConnection": {
+    "port": ${port},
+    "path": ${path},
+    "accessToken": ${accessToken}
+  },
+  "testSendPrivateMessage": false,
+  "friendUserID": ${userID},
+  "strangerUserID": ${userID},
+  "botIsMemberGroupID": ${groupID},
+  "botIsAdminGroupID": ${groupID},
+  "botIsOwnerGroupID": ${groupID},
+  "botIsMemberAndOtherIsMember": {
+    "groupID": ${groupID},
+    "userID": ${userID}
+  },
+  "botIsMemberAndOtherIsAdmin": {
+    "groupID": ${groupID},
+    "userID": ${userID}
+  },
+  "botIsMemberAndOtherIsOwner": {
+    "groupID": ${groupID},
+    "userID": ${userID}
+  },
+  "botIsAdminAndOtherIsMember": {
+    "groupID": ${groupID},
+    "userID": ${userID}
+  },
+  "botIsAdminAndOtherIsAdmin": {
+    "groupID": ${groupID},
+    "userID": ${userID}
+  },
+  "botIsAdminAndOtherIsOwner": {
+    "groupID": ${groupID},
+    "userID": ${userID}
+  },
+  "botIsOwnerAndOtherIsMember": {
+    "groupID": ${groupID},
+    "userID": ${userID}
+  },
+  "botIsOwnerAndOtherIsAdmin": {
+    "groupID": ${groupID},
+    "userID": ${userID}
+  }
+}

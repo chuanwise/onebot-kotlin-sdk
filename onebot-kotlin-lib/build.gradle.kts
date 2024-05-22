@@ -18,31 +18,21 @@ plugins {
     kotlin("jvm") version "1.9.10"
 }
 
-allprojects {
-    group = "cn.chuanwise"
-    version = "0.1.0-SNAPSHOT"
-}
-
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    val log4jVersion: String by rootProject
+    val jacksonVersion: String by rootProject
+    api("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+    api("com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion")
+    api("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
+
     val kotlinLoggingVersion: String by rootProject
-    val slf4jVersion: String by rootProject
     implementation("io.github.oshai:kotlin-logging-jvm:$kotlinLoggingVersion")
-    implementation("org.apache.logging.log4j:log4j-api:$log4jVersion")
-    runtimeOnly("org.apache.logging.log4j:log4j-core:$log4jVersion")
-    testRuntimeOnly("org.apache.logging.log4j:log4j-core:$log4jVersion")
 
-    implementation("org.slf4j:slf4j-api:$slf4jVersion")
-    implementation("org.apache.logging.log4j:log4j-slf4j2-impl:$log4jVersion")
-
-    val jacksonVersion = "2.17.1"
-    implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
-    implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
+    val kotlinCoroutineVersion: String by rootProject
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
 
     val junitVersion: String by rootProject
     testImplementation(platform("org.junit:junit-bom:$junitVersion"))

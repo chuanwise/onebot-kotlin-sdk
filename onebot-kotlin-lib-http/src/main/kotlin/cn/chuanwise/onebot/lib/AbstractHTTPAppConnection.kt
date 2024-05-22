@@ -14,15 +14,7 @@
  * limitations under the License.
  */
 
-rootProject.name = "onebot-kotlin-sdk"
-include("onebot-kotlin-sdk-app")
-include("onebot-kotlin-sdk-impl")
-include("onebot-11-kotlin-sdk-app")
-include("onebot-11-kotlin-sdk-impl")
-include("onebot-11-kotlin-lib")
-include("onebot-kotlin-lib-ws")
-include("onebot-kotlin-lib-http")
-include("onebot-kotlin-lib-app")
-include("onebot-kotlin-lib-impl")
-include("onebot-kotlin-lib")
-include("onebot-11-kotlin-lib-app")
+package cn.chuanwise.onebot.lib
+
+abstract class AbstractHTTPAppConnection {
+}
