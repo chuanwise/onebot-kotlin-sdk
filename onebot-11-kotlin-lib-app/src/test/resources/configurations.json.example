@@ -1,10 +1,10 @@
 {
-  "webSocketAppConnection": {
+  "appWebSocketConnection": {
     "host": ${host},
     "port": ${port},
     "accessToken": ${accessToken}
   },
-  "reverseWebSocketAppConnection": {
+  "appReverseWebSocketConnection": {
     "port": ${port},
     "path": ${path},
     "accessToken": ${accessToken}

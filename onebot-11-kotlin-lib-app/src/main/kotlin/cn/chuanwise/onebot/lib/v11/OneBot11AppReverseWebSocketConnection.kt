@@ -16,12 +16,12 @@
 
 package cn.chuanwise.onebot.lib.v11
 
+import cn.chuanwise.onebot.lib.AppReverseWebSocketConnection
 import cn.chuanwise.onebot.lib.DEFAULT_ACCESS_TOKEN
 import cn.chuanwise.onebot.lib.DEFAULT_HEARTBEAT_INTERVAL_MILLISECONDS
 import cn.chuanwise.onebot.lib.DEFAULT_HOST
 import cn.chuanwise.onebot.lib.DEFAULT_PATH
 import cn.chuanwise.onebot.lib.Expect
-import cn.chuanwise.onebot.lib.ReverseWebSocketAppConnection
 import cn.chuanwise.onebot.lib.ReverseWebSocketConnectionConfiguration
 import cn.chuanwise.onebot.lib.WatchDog
 import cn.chuanwise.onebot.lib.deserializeTo
@@ -70,7 +70,7 @@ class OneBot11AppReverseWebSocketConnection private constructor(
     private val logger: KLogger,
     configuration: ReverseWebSocketConnectionConfiguration,
     override val packBus: OneBot11AppPackBus = OneBot11AppPackBus(objectMapper, logger),
-) : ReverseWebSocketAppConnection(objectMapper, logger, configuration, packBus), OneBot11AppConnection {
+) : AppReverseWebSocketConnection(objectMapper, logger, configuration, packBus), OneBot11AppConnection {
 
     init {
         packBus.connection = this

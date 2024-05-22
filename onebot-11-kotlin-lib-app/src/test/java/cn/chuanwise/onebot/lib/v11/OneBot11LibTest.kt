@@ -46,8 +46,8 @@ class OneBot11LibTest {
         private lateinit var configurations: OneBot11LibTestConfiguration
         private val logger = KotlinLogging.logger { }
 
-        private lateinit var webSocketAppConnection: OneBot11WebSocketAppConnection
-        private lateinit var reverseWebSocketAppConnection: OneBot11AppReverseWebSocketConnection
+        private lateinit var appWebSocketConnection: OneBot11AppWebSocketConnection
+        private lateinit var appReverseWebSocketConnection: OneBot11AppReverseWebSocketConnection
 
         @JvmStatic
         fun getResourceURL(path: String): URL {
@@ -75,18 +75,18 @@ class OneBot11LibTest {
                         "."
             )
 
-            webSocketAppConnection =
-                OneBot11WebSocketAppConnection(configurations.webSocketAppConnection).awaitUtilConnected()
-            reverseWebSocketAppConnection = OneBot11AppReverseWebSocketConnection(
-                configurations.reverseWebSocketAppConnection
+            appWebSocketConnection =
+                OneBot11AppWebSocketConnection(configurations.appWebSocketConnection).awaitUtilConnected()
+            appReverseWebSocketConnection = OneBot11AppReverseWebSocketConnection(
+                configurations.appReverseWebSocketConnection
             ).awaitUtilConnected()
         }
 
         @JvmStatic
         @AfterAll
         fun afterAll() {
-            webSocketAppConnection.close()
-            reverseWebSocketAppConnection.close()
+            appWebSocketConnection.close()
+            appReverseWebSocketConnection.close()
         }
     }
 
@@ -141,7 +141,7 @@ class OneBot11LibTest {
         }
 
         listOf(singleTextMessageData, textMessageInCQFormat, catImageData).forEach {
-            webSocketAppConnection.sendPrivateMessage(
+            appWebSocketConnection.sendPrivateMessage(
                 userID = configurations.friendUserID,
                 message = it,
             )
@@ -151,7 +151,7 @@ class OneBot11LibTest {
     @Test
     fun testSendGroupMessage(): Unit = runBlocking {
         listOf(shakingData, recordData).forEach {
-            webSocketAppConnection.sendGroupMessage(
+            appWebSocketConnection.sendGroupMessage(
                 groupID = configurations.botIsAdminGroupID,
                 message = it,
             )
@@ -160,22 +160,22 @@ class OneBot11LibTest {
 
     @Test
     fun testSendAndRecallMessage(): Unit = runBlocking {
-        val groupMessageID = webSocketAppConnection.sendMessage(
+        val groupMessageID = appWebSocketConnection.sendMessage(
             messageType = GROUP,
             groupID = configurations.botIsAdminGroupID,
             userID = null,
             message = textMessageWithAtFriend,
         )
         delay(5000)
-        webSocketAppConnection.deleteMessage(groupMessageID)
+        appWebSocketConnection.deleteMessage(groupMessageID)
 
-        val privateMessageID = webSocketAppConnection.sendMessage(
+        val privateMessageID = appWebSocketConnection.sendMessage(
             messageType = PRIVATE,
             groupID = null,
             userID = configurations.friendUserID,
             message = shakingData,
         )
         delay(5000)
-        webSocketAppConnection.deleteMessage(privateMessageID)
+        appWebSocketConnection.deleteMessage(privateMessageID)
     }
 }

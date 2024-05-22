@@ -46,7 +46,7 @@ interface WebSocketReceivingLoop : AutoCloseable {
  *
  * @author Chuanwise
  */
-class WebSocketAppReceivingLoop(
+class AppWebSocketReceivingLoop(
     private val objectMapper: ObjectMapper,
     private val logger: KLogger
 ) : WebSocketReceivingLoop {

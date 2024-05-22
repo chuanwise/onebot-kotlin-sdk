@@ -22,8 +22,8 @@ data class GroupUser(
 )
 
 data class OneBot11LibTestConfiguration(
-    val webSocketAppConnection: OneBot11AppWebSocketConnectionConfiguration,
-    val reverseWebSocketAppConnection: OneBot11AppReverseWebSocketConnectionConfiguration,
+    val appWebSocketConnection: OneBot11AppWebSocketConnectionConfiguration,
+    val appReverseWebSocketConnection: OneBot11AppReverseWebSocketConnectionConfiguration,
     val testSendPrivateMessage: Boolean,
     val friendUserID: Long,
     val strangerUserID: Long,

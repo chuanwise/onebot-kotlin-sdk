@@ -19,20 +19,20 @@ package cn.chuanwise.onebot.lib
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.oshai.kotlinlogging.KLogger
 
-abstract class ReverseWebSocketAppConnection private constructor(
-    protected val receivingLoop: WebSocketAppReceivingLoop,
+abstract class AppWebSocketConnection private constructor(
+    protected val receivingLoop: AppWebSocketReceivingLoop,
     logger: KLogger,
-    configuration: ReverseWebSocketConnectionConfiguration,
+    configuration: WebSocketConnectionConfiguration,
     packBus: PackBus
-) : ReverseWebSocketConnection(receivingLoop, logger, configuration, packBus), AppConnection {
+) : WebSocketConnection(receivingLoop, logger, configuration, packBus), AppConnection {
 
     constructor(
         objectMapper: ObjectMapper,
         logger: KLogger,
-        configuration: ReverseWebSocketConnectionConfiguration,
+        configuration: WebSocketConnectionConfiguration,
         packBus: PackBus
     ) : this(
-        WebSocketAppReceivingLoop(objectMapper, logger),
+        AppWebSocketReceivingLoop(objectMapper, logger),
         logger,
         configuration,
         packBus

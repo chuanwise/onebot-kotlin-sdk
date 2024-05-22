@@ -17,8 +17,8 @@
 package cn.chuanwise.onebot.lib.v11
 
 import cn.chuanwise.onebot.lib.Action
+import cn.chuanwise.onebot.lib.AppWebSocketReceivingLoop
 import cn.chuanwise.onebot.lib.Expect
-import cn.chuanwise.onebot.lib.WebSocketAppReceivingLoop
 import cn.chuanwise.onebot.lib.deserializeTo
 import cn.chuanwise.onebot.lib.v11.data.BAD_REQUEST_RET_CODE
 import cn.chuanwise.onebot.lib.v11.data.SUCCESS_RET_CODE
@@ -33,7 +33,7 @@ import io.ktor.websocket.WebSocketSession
 
 suspend fun <P> doCall(
     session: WebSocketSession?,
-    receivingLoop: WebSocketAppReceivingLoop,
+    receivingLoop: AppWebSocketReceivingLoop,
     objectMapper: ObjectMapper,
     logger: KLogger,
     expect: Expect<P, *>,

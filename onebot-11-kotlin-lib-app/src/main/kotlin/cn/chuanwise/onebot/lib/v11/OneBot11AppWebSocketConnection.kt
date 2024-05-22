@@ -16,6 +16,7 @@
 
 package cn.chuanwise.onebot.lib.v11
 
+import cn.chuanwise.onebot.lib.AppWebSocketConnection
 import cn.chuanwise.onebot.lib.DEFAULT_ACCESS_TOKEN
 import cn.chuanwise.onebot.lib.DEFAULT_HEARTBEAT_INTERVAL_MILLISECONDS
 import cn.chuanwise.onebot.lib.DEFAULT_MAX_RECONNECT_ATTEMPTS
@@ -23,7 +24,6 @@ import cn.chuanwise.onebot.lib.DEFAULT_PATH
 import cn.chuanwise.onebot.lib.DEFAULT_RECONNECT_INTERVAL_MILLISECONDS
 import cn.chuanwise.onebot.lib.Expect
 import cn.chuanwise.onebot.lib.WatchDog
-import cn.chuanwise.onebot.lib.WebSocketAppConnection
 import cn.chuanwise.onebot.lib.WebSocketConnectionConfiguration
 import cn.chuanwise.onebot.lib.deserializeTo
 import cn.chuanwise.onebot.lib.events
@@ -70,12 +70,12 @@ data class OneBot11AppWebSocketConnectionConfiguration(
     )
 }
 
-class OneBot11WebSocketAppConnection private constructor(
+class OneBot11AppWebSocketConnection private constructor(
     private val objectMapper: ObjectMapper,
     private val logger: KLogger,
     configuration: WebSocketConnectionConfiguration,
     override val packBus: OneBot11AppPackBus = OneBot11AppPackBus(objectMapper, logger),
-) : WebSocketAppConnection(objectMapper, logger, configuration, packBus), OneBot11AppConnection {
+) : AppWebSocketConnection(objectMapper, logger, configuration, packBus), OneBot11AppConnection {
 
     init {
         packBus.connection = this
@@ -147,5 +147,5 @@ class OneBot11WebSocketAppConnection private constructor(
         }
     }
 
-    override fun await(): OneBot11WebSocketAppConnection = super.await() as OneBot11WebSocketAppConnection
+    override fun await(): OneBot11AppWebSocketConnection = super.await() as OneBot11AppWebSocketConnection
 }
