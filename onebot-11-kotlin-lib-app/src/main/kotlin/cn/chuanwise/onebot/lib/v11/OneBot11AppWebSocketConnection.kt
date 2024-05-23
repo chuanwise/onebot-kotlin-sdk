@@ -128,22 +128,22 @@ class OneBot11AppWebSocketConnection private constructor(
 
     @Suppress("UNCHECKED_CAST")
     override suspend fun <P, R> call(expect: Expect<P, R>, params: P): R {
-        val resp = doCall(session, receivingLoop, objectMapper, logger, expect, params)
+        val resp = doCall(session, receivingLoop, objectMapper, logger, expect, params, false)
         return when (resp.status) {
             OK -> resp.data?.deserializeTo(objectMapper, expect.respType) ?: Unit as R
             ASYNC -> throw IllegalStateException("Async response.")
-            FAILED -> throw IllegalStateException("Failed.")
-            else -> throw IllegalStateException("Unknown error.")
+            FAILED -> throw IllegalStateException("Operation failed in implementation.")
+            else -> throw IllegalStateException("Unknown response status: ${resp.status}")
         }
     }
 
     override suspend fun <P> callAsync(expect: Expect<P, *>, params: P) {
-        val resp = doCall(session, receivingLoop, objectMapper, logger, expect, params)
+        val resp = doCall(session, receivingLoop, objectMapper, logger, expect, params, true)
         return when (resp.status) {
             OK -> throw IllegalStateException("Not async response.")
             ASYNC -> Unit
             FAILED -> throw IllegalStateException("Failed.")
-            else -> throw IllegalStateException("Unknown error.")
+            else -> throw IllegalStateException("Unknown response status: ${resp.status}")
         }
     }
 

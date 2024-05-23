@@ -20,8 +20,6 @@ package cn.chuanwise.onebot.lib
 interface AppConnection : Connection {
 }
 
-suspend fun <P, R> AppConnection.request(action: Action<P, R>, params: P): R = call(action, params)
-
 // Kotlin-friendly API.
 inline fun <reified T : ToAppPack> AppConnection.events(
     crossinline listener: suspend (T) -> Any?

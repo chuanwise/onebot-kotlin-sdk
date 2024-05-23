@@ -16,16 +16,30 @@
 
 package cn.chuanwise.onebot.lib.v11
 
-import cn.chuanwise.onebot.lib.*
-import cn.chuanwise.onebot.lib.v11.data.message.*
+import cn.chuanwise.onebot.lib.AT
+import cn.chuanwise.onebot.lib.FACE
+import cn.chuanwise.onebot.lib.GROUP
+import cn.chuanwise.onebot.lib.IMAGE
+import cn.chuanwise.onebot.lib.PRIVATE
+import cn.chuanwise.onebot.lib.RECORD
+import cn.chuanwise.onebot.lib.TEXT
+import cn.chuanwise.onebot.lib.awaitUtilConnected
+import cn.chuanwise.onebot.lib.v11.data.message.ArrayMessageData
+import cn.chuanwise.onebot.lib.v11.data.message.AtData
+import cn.chuanwise.onebot.lib.v11.data.message.CQCodeMessageData
+import cn.chuanwise.onebot.lib.v11.data.message.IDTag
+import cn.chuanwise.onebot.lib.v11.data.message.ImageData
+import cn.chuanwise.onebot.lib.v11.data.message.RecordData
+import cn.chuanwise.onebot.lib.v11.data.message.SingleMessageData
+import cn.chuanwise.onebot.lib.v11.data.message.TextData
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.github.oshai.kotlinlogging.KotlinLogging
+import java.net.URL
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
-import java.net.URL
 
 class OneBot11LibTest {
     companion object {
@@ -189,7 +203,7 @@ class OneBot11LibTest {
         appWebSocketConnection.setGroupKick(
             groupID = configurations.botIsAdminAndOtherIsMember.groupID,
             userID = configurations.botIsAdminAndOtherIsMember.userID,
-            rejectAddsend = false
+            rejectAddRequest = false
         )
     }
 
@@ -409,6 +423,4 @@ class OneBot11LibTest {
     fun testCleanCache(): Unit = runBlocking {
         appWebSocketConnection.cleanCache()
     }
-
-
 }

@@ -18,8 +18,6 @@
 
 package cn.chuanwise.onebot.lib.v11
 
-import cn.chuanwise.onebot.lib.AppConnection
-import cn.chuanwise.onebot.lib.request
 import cn.chuanwise.onebot.lib.v11.data.action.DelayData
 import cn.chuanwise.onebot.lib.v11.data.action.DomainData
 import cn.chuanwise.onebot.lib.v11.data.action.FileData
@@ -52,7 +50,7 @@ import cn.chuanwise.onebot.lib.v11.data.message.MessageData
 /**
  * @see [SEND_PRIVATE_MESSAGE]
  */
-suspend fun AppConnection.sendPrivateMessage(userID: Long, message: MessageData): Int = request(
+suspend fun OneBot11AppConnection.sendPrivateMessage(userID: Long, message: MessageData): Int = call(
     SEND_PRIVATE_MESSAGE, SendPrivateMessageData(
         userID = userID,
         message = message,
@@ -60,10 +58,18 @@ suspend fun AppConnection.sendPrivateMessage(userID: Long, message: MessageData)
     )
 ).messageID
 
+suspend fun OneBot11AppConnection.sendPrivateMessageAsync(userID: Long, message: MessageData) = callAsync(
+    SEND_PRIVATE_MESSAGE, SendPrivateMessageData(
+        userID = userID,
+        message = message,
+        autoEscape = (message as? CQCodeMessageData)?.autoEscape ?: false
+    )
+)
+
 /**
  * @see [SEND_GROUP_MESSAGE]
  */
-suspend fun AppConnection.sendGroupMessage(groupID: Long, message: MessageData): Int = request(
+suspend fun OneBot11AppConnection.sendGroupMessage(groupID: Long, message: MessageData): Int = call(
     SEND_GROUP_MESSAGE, SendGroupMessageData(
         groupID = groupID,
         message = message,
@@ -71,11 +77,24 @@ suspend fun AppConnection.sendGroupMessage(groupID: Long, message: MessageData):
     )
 ).messageID
 
+suspend fun OneBot11AppConnection.sendGroupMessageAsync(groupID: Long, message: MessageData) = callAsync(
+    SEND_GROUP_MESSAGE, SendGroupMessageData(
+        groupID = groupID,
+        message = message,
+        autoEscape = (message as? CQCodeMessageData)?.autoEscape ?: false
+    )
+)
+
 /**
  * @see [SEND_MESSAGE]
  */
-suspend fun AppConnection.sendMessage(messageType: String, userID: Long?, groupID: Long?, message: MessageData): Int =
-    request(
+suspend fun OneBot11AppConnection.sendMessage(
+    messageType: String,
+    userID: Long?,
+    groupID: Long?,
+    message: MessageData
+): Int =
+    call(
         SEND_MESSAGE, SendMessageData(
             messageType = messageType,
             userID = userID,
@@ -85,31 +104,57 @@ suspend fun AppConnection.sendMessage(messageType: String, userID: Long?, groupI
         )
     ).messageID
 
+suspend fun OneBot11AppConnection.sendMessageAsync(
+    messageType: String,
+    userID: Long?,
+    groupID: Long?,
+    message: MessageData
+) = callAsync(
+    SEND_MESSAGE, SendMessageData(
+        messageType = messageType,
+        userID = userID,
+        groupID = groupID,
+        message = message,
+        autoEscape = (message as? CQCodeMessageData)?.autoEscape ?: false
+    )
+)
+
 /**
  * @see [DELETE_MESSAGE]
  */
-suspend fun AppConnection.deleteMessage(messageID: Int) = request(
+suspend fun OneBot11AppConnection.deleteMessage(messageID: Int) = call(
+    DELETE_MESSAGE, MessageIDData(messageID)
+)
+
+suspend fun OneBot11AppConnection.deleteMessageAsync(messageID: Int) = callAsync(
     DELETE_MESSAGE, MessageIDData(messageID)
 )
 
 /**
  * @see [GET_MESSAGE]
  */
-suspend fun AppConnection.getMessage(messageID: Int) = request(
+suspend fun OneBot11AppConnection.getMessage(messageID: Int) = call(
     GET_MESSAGE, MessageIDData(messageID)
 )
 
 /**
  * @see [GET_FORWARD_MESSAGE]
  */
-suspend fun AppConnection.getForwardMessage(id: String) = request(
+suspend fun OneBot11AppConnection.getForwardMessage(id: String) = call(
     GET_FORWARD_MESSAGE, IDData(id)
 ).message
 
 /**
  * @see [SEND_LIKE]
  */
-suspend fun AppConnection.sendLike(userID: Long, times: Int) = request(
+suspend fun OneBot11AppConnection.sendLike(userID: Long, times: Int) = call(
+    SEND_LIKE, SendLikeData(
+        userID = userID,
+        times = times
+    )
+)
+
+suspend fun OneBot11AppConnection.sendLikeAsync(userID: Long, times: Int) = callAsync(
     SEND_LIKE, SendLikeData(
         userID = userID,
         times = times
@@ -119,18 +164,34 @@ suspend fun AppConnection.sendLike(userID: Long, times: Int) = request(
 /**
  * @see [SET_GROUP_KICK]
  */
-suspend fun AppConnection.setGroupKick(groupID: Long, userID: Long, rejectAddsend: Boolean) = request(
+suspend fun OneBot11AppConnection.setGroupKick(groupID: Long, userID: Long, rejectAddRequest: Boolean) = call(
     SET_GROUP_KICK, SetGroupKickData(
         groupID = groupID,
         userID = userID,
-        rejectAddRequest = rejectAddsend
+        rejectAddRequest = rejectAddRequest
+    )
+)
+
+suspend fun OneBot11AppConnection.setGroupKickAsync(groupID: Long, userID: Long, rejectAddRequest: Boolean) = callAsync(
+    SET_GROUP_KICK, SetGroupKickData(
+        groupID = groupID,
+        userID = userID,
+        rejectAddRequest = rejectAddRequest
     )
 )
 
 /**
  * @see [SET_GROUP_BAN]
  */
-suspend fun AppConnection.setGroupBan(groupID: Long, userID: Long, duration: Long) = request(
+suspend fun OneBot11AppConnection.setGroupBan(groupID: Long, userID: Long, duration: Long) = call(
+    SET_GROUP_BAN, SetGroupBanData(
+        groupID = groupID,
+        userID = userID,
+        duration = duration
+    )
+)
+
+suspend fun OneBot11AppConnection.setGroupBanAsync(groupID: Long, userID: Long, duration: Long) = callAsync(
     SET_GROUP_BAN, SetGroupBanData(
         groupID = groupID,
         userID = userID,
@@ -141,7 +202,16 @@ suspend fun AppConnection.setGroupBan(groupID: Long, userID: Long, duration: Lon
 /**
  * @see [SET_GROUP_ANONYMOUS_BAN]
  */
-suspend fun AppConnection.setGroupAnonymousBan(groupID: Long, flag: String, duration: Long) = request(
+suspend fun OneBot11AppConnection.setGroupAnonymousBan(groupID: Long, flag: String, duration: Long) = call(
+    SET_GROUP_ANONYMOUS_BAN, SetGroupAnonymousBanData(
+        groupID = groupID,
+        anonymous = null,
+        flag = flag,
+        duration = duration
+    )
+)
+
+suspend fun OneBot11AppConnection.setGroupAnonymousBanAsync(groupID: Long, flag: String, duration: Long) = callAsync(
     SET_GROUP_ANONYMOUS_BAN, SetGroupAnonymousBanData(
         groupID = groupID,
         anonymous = null,
@@ -153,7 +223,21 @@ suspend fun AppConnection.setGroupAnonymousBan(groupID: Long, flag: String, dura
 /**
  * @see [SET_GROUP_ANONYMOUS_BAN]
  */
-suspend fun AppConnection.setGroupAnonymousBan(groupID: Long, sender: AnonymousSenderData, duration: Long) = request(
+suspend fun OneBot11AppConnection.setGroupAnonymousBan(groupID: Long, sender: AnonymousSenderData, duration: Long) =
+    call(
+    SET_GROUP_ANONYMOUS_BAN, SetGroupAnonymousBanData(
+        groupID = groupID,
+        anonymous = sender,
+        flag = null,
+        duration = duration
+    )
+)
+
+suspend fun OneBot11AppConnection.setGroupAnonymousBanAsync(
+    groupID: Long,
+    sender: AnonymousSenderData,
+    duration: Long
+) = callAsync(
     SET_GROUP_ANONYMOUS_BAN, SetGroupAnonymousBanData(
         groupID = groupID,
         anonymous = sender,
@@ -165,7 +249,14 @@ suspend fun AppConnection.setGroupAnonymousBan(groupID: Long, sender: AnonymousS
 /**
  * @see [SET_GROUP_WHOLE_BAN]
  */
-suspend fun AppConnection.setGroupWholeBan(groupID: Long, enable: Boolean) = request(
+suspend fun OneBot11AppConnection.setGroupWholeBan(groupID: Long, enable: Boolean) = call(
+    SET_GROUP_WHOLE_BAN, GroupIDEnableData(
+        groupID = groupID,
+        enable = enable
+    )
+)
+
+suspend fun OneBot11AppConnection.setGroupWholeBanAsync(groupID: Long, enable: Boolean) = callAsync(
     SET_GROUP_WHOLE_BAN, GroupIDEnableData(
         groupID = groupID,
         enable = enable
@@ -175,7 +266,15 @@ suspend fun AppConnection.setGroupWholeBan(groupID: Long, enable: Boolean) = req
 /**
  * @see [SET_GROUP_ANONYMOUS]
  */
-suspend fun AppConnection.setGroupAdmin(groupID: Long, userID: Long, enable: Boolean) = request(
+suspend fun OneBot11AppConnection.setGroupAdmin(groupID: Long, userID: Long, enable: Boolean) = call(
+    SET_GROUP_ADMIN, GroupIDUserIDEnableData(
+        groupID = groupID,
+        userID = userID,
+        enable = enable
+    )
+)
+
+suspend fun OneBot11AppConnection.setGroupAdminAsync(groupID: Long, userID: Long, enable: Boolean) = callAsync(
     SET_GROUP_ADMIN, GroupIDUserIDEnableData(
         groupID = groupID,
         userID = userID,
@@ -186,7 +285,14 @@ suspend fun AppConnection.setGroupAdmin(groupID: Long, userID: Long, enable: Boo
 /**
  * @see [SET_GROUP_ANONYMOUS]
  */
-suspend fun AppConnection.setGroupAnonymous(groupID: Long, enable: Boolean) = request(
+suspend fun OneBot11AppConnection.setGroupAnonymous(groupID: Long, enable: Boolean) = call(
+    SET_GROUP_ANONYMOUS, GroupIDEnableData(
+        groupID = groupID,
+        enable = enable
+    )
+)
+
+suspend fun OneBot11AppConnection.setGroupAnonymousAsync(groupID: Long, enable: Boolean) = callAsync(
     SET_GROUP_ANONYMOUS, GroupIDEnableData(
         groupID = groupID,
         enable = enable
@@ -196,7 +302,15 @@ suspend fun AppConnection.setGroupAnonymous(groupID: Long, enable: Boolean) = re
 /**
  * @see [SET_GROUP_CARD]
  */
-suspend fun AppConnection.setGroupCard(groupID: Long, userID: Long, card: String) = request(
+suspend fun OneBot11AppConnection.setGroupCard(groupID: Long, userID: Long, card: String) = call(
+    SET_GROUP_CARD, SetGroupCardData(
+        groupID = groupID,
+        userID = userID,
+        card = card
+    )
+)
+
+suspend fun OneBot11AppConnection.setGroupCardAsync(groupID: Long, userID: Long, card: String) = callAsync(
     SET_GROUP_CARD, SetGroupCardData(
         groupID = groupID,
         userID = userID,
@@ -207,7 +321,14 @@ suspend fun AppConnection.setGroupCard(groupID: Long, userID: Long, card: String
 /**
  * @see [SET_GROUP_NAME]
  */
-suspend fun AppConnection.setGroupName(groupID: Long, groupName: String) = request(
+suspend fun OneBot11AppConnection.setGroupName(groupID: Long, groupName: String) = call(
+    SET_GROUP_NAME, SetGroupNameData(
+        groupID = groupID,
+        groupName = groupName
+    )
+)
+
+suspend fun OneBot11AppConnection.setGroupNameAsync(groupID: Long, groupName: String) = callAsync(
     SET_GROUP_NAME, SetGroupNameData(
         groupID = groupID,
         groupName = groupName
@@ -217,7 +338,14 @@ suspend fun AppConnection.setGroupName(groupID: Long, groupName: String) = reque
 /**
  * @see [SET_GROUP_LEAVE]
  */
-suspend fun AppConnection.setGroupLeave(groupID: Long, isDismiss: Boolean) = request(
+suspend fun OneBot11AppConnection.setGroupLeave(groupID: Long, isDismiss: Boolean) = call(
+    SET_GROUP_LEAVE, SetGroupLeaveData(
+        groupID = groupID,
+        isDismiss = isDismiss
+    )
+)
+
+suspend fun OneBot11AppConnection.setGroupLeaveAsync(groupID: Long, isDismiss: Boolean) = callAsync(
     SET_GROUP_LEAVE, SetGroupLeaveData(
         groupID = groupID,
         isDismiss = isDismiss
@@ -227,8 +355,13 @@ suspend fun AppConnection.setGroupLeave(groupID: Long, isDismiss: Boolean) = req
 /**
  * @see [SET_GROUP_SPECIAL_TITLE]
  */
-suspend fun AppConnection.setGroupSpecialTitle(groupID: Long, userID: Long, specialTitle: String, duration: Long) =
-    request(
+suspend fun OneBot11AppConnection.setGroupSpecialTitle(
+    groupID: Long,
+    userID: Long,
+    specialTitle: String,
+    duration: Long
+) =
+    call(
         SET_GROUP_SPECIAL_TITLE, SetGroupSpecialTitleData(
             groupID = groupID,
             userID = userID,
@@ -237,10 +370,32 @@ suspend fun AppConnection.setGroupSpecialTitle(groupID: Long, userID: Long, spec
         )
     )
 
+suspend fun OneBot11AppConnection.setGroupSpecialTitleAsync(
+    groupID: Long,
+    userID: Long,
+    specialTitle: String,
+    duration: Long
+) = callAsync(
+    SET_GROUP_SPECIAL_TITLE, SetGroupSpecialTitleData(
+        groupID = groupID,
+        userID = userID,
+        specialTitle = specialTitle,
+        duration = duration
+    )
+)
+
 /**
- * @see [SET_FRIEND_ADD_send]
+ * @see [SET_FRIEND_ADD_REQUEST]
  */
-suspend fun AppConnection.setFriendAddRequest(flag: String, approve: Boolean, remark: String) = request(
+suspend fun OneBot11AppConnection.setFriendAddRequest(flag: String, approve: Boolean, remark: String) = call(
+    SET_FRIEND_ADD_REQUEST, SetFriendAddRequestData(
+        flag = flag,
+        approve = approve,
+        remark = remark
+    )
+)
+
+suspend fun OneBot11AppConnection.setFriendAddRequestAsync(flag: String, approve: Boolean, remark: String) = callAsync(
     SET_FRIEND_ADD_REQUEST, SetFriendAddRequestData(
         flag = flag,
         approve = approve,
@@ -249,9 +404,24 @@ suspend fun AppConnection.setFriendAddRequest(flag: String, approve: Boolean, re
 )
 
 /**
- * @see [SET_GROUP_ADD_send]
+ * @see [SET_GROUP_ADD_REQUEST]
  */
-suspend fun AppConnection.setGroupAddRequest(flag: String, subType: String, approve: Boolean, reason: String) = request(
+suspend fun OneBot11AppConnection.setGroupAddRequest(flag: String, subType: String, approve: Boolean, reason: String) =
+    call(
+    SET_GROUP_ADD_REQUEST, SetGroupAddRequestData(
+        flag = flag,
+        approve = approve,
+        subType = subType,
+        reason = reason
+    )
+)
+
+suspend fun OneBot11AppConnection.setGroupAddRequestAsync(
+    flag: String,
+    subType: String,
+    approve: Boolean,
+    reason: String
+) = callAsync(
     SET_GROUP_ADD_REQUEST, SetGroupAddRequestData(
         flag = flag,
         approve = approve,
@@ -263,14 +433,14 @@ suspend fun AppConnection.setGroupAddRequest(flag: String, subType: String, appr
 /**
  * @see [GET_LOGIN_INFO]
  */
-suspend fun AppConnection.getLoginInfo() = request(
+suspend fun OneBot11AppConnection.getLoginInfo() = call(
     GET_LOGIN_INFO, Unit
 )
 
 /**
  * @see [GET_STRANGER_INFO]
  */
-suspend fun AppConnection.getStrangerInfo(userID: Long, noCache: Boolean) = request(
+suspend fun OneBot11AppConnection.getStrangerInfo(userID: Long, noCache: Boolean) = call(
     GET_STRANGER_INFO, GetStrangerInfoData(
         userID = userID,
         noCache = noCache
@@ -280,7 +450,7 @@ suspend fun AppConnection.getStrangerInfo(userID: Long, noCache: Boolean) = requ
 /**
  * @see [GET_FRIEND_LIST]
  */
-suspend fun AppConnection.getGroupInfo(groupID: Long, noCache: Boolean) = request(
+suspend fun OneBot11AppConnection.getGroupInfo(groupID: Long, noCache: Boolean) = call(
     GET_GROUP_INFO, GetGroupInfoData(
         groupID = groupID,
         noCache = noCache
@@ -290,28 +460,28 @@ suspend fun AppConnection.getGroupInfo(groupID: Long, noCache: Boolean) = reques
 /**
  * @see [GET_FRIEND_LIST]
  */
-suspend fun AppConnection.getFriendList() = request(
+suspend fun OneBot11AppConnection.getFriendList() = call(
     GET_FRIEND_LIST, Unit
 )
 
 /**
  * @see [GET_GROUP_LIST]
  */
-suspend fun AppConnection.getGroupList() = request(
+suspend fun OneBot11AppConnection.getGroupList() = call(
     GET_GROUP_LIST, Unit
 )
 
 /**
  * @see [GET_GROUP_MEMBER_INFO]
  */
-suspend fun AppConnection.getGroupMemberList(groupID: Long) = request(
+suspend fun OneBot11AppConnection.getGroupMemberList(groupID: Long) = call(
     GET_GROUP_MEMBER_LIST, GroupIDData(groupID)
 )
 
 /**
  * @see [GET_GROUP_HONOR_INFO]
  */
-suspend fun AppConnection.getGroupHonorInfo(groupID: Long, type: String) = request(
+suspend fun OneBot11AppConnection.getGroupHonorInfo(groupID: Long, type: String) = call(
     GET_GROUP_HONOR_INFO, GetGroupHonorInfoData(
         groupID = groupID,
         type = type
@@ -321,28 +491,28 @@ suspend fun AppConnection.getGroupHonorInfo(groupID: Long, type: String) = reque
 /**
  * @see [GET_COOKIES]
  */
-suspend fun AppConnection.getCookies(domain: String) = request(
+suspend fun OneBot11AppConnection.getCookies(domain: String) = call(
     GET_COOKIES, DomainData(domain)
 )
 
 /**
  * @see [GET_CSRF_TOKEN]
  */
-suspend fun AppConnection.getCSRFToken() = request(
+suspend fun OneBot11AppConnection.getCSRFToken() = call(
     GET_CSRF_TOKEN, Unit
 )
 
 /**
  * @see [GET_CREDENTIALS]
  */
-suspend fun AppConnection.getCredentials(domain: String) = request(
+suspend fun OneBot11AppConnection.getCredentials(domain: String) = call(
     GET_CREDENTIALS, DomainData(domain)
 )
 
 /**
  * @see [GET_RECORD]
  */
-suspend fun AppConnection.getRecord(file: String, outFormat: String) = request(
+suspend fun OneBot11AppConnection.getRecord(file: String, outFormat: String) = call(
     GET_RECORD, GetRecordData(
         file = file,
         outFormat = outFormat
@@ -352,7 +522,7 @@ suspend fun AppConnection.getRecord(file: String, outFormat: String) = request(
 /**
  * @see [GET_IMAGE]
  */
-suspend fun AppConnection.getImage(file: String) = request(
+suspend fun OneBot11AppConnection.getImage(file: String) = call(
     GET_IMAGE, FileData(
         file = file
     )
@@ -361,41 +531,45 @@ suspend fun AppConnection.getImage(file: String) = request(
 /**
  * @see [CAN_SEND_IMAGE]
  */
-suspend fun AppConnection.canSendImage() = request(
+suspend fun OneBot11AppConnection.canSendImage() = call(
     CAN_SEND_IMAGE, Unit
 )
 
 /**
  * @see [CAN_SEND_RECORD]
  */
-suspend fun AppConnection.canSendRecord() = request(
+suspend fun OneBot11AppConnection.canSendRecord() = call(
     CAN_SEND_RECORD, Unit
 )
 
 /**
  * @see [GET_STATUS]
  */
-suspend fun AppConnection.getStatus() = request(
+suspend fun OneBot11AppConnection.getStatus() = call(
     GET_STATUS, Unit
 )
 
 /**
  * @see [GET_VERSION_INFO]
  */
-suspend fun AppConnection.getVersionInfo() = request(
+suspend fun OneBot11AppConnection.getVersionInfo() = call(
     GET_VERSION_INFO, Unit
 )
 
 /**
  * @see [SET_RESTART]
  */
-suspend fun AppConnection.setRestart(delay: Int) = request(
+suspend fun OneBot11AppConnection.setRestart(delay: Int) = call(
     SET_RESTART, DelayData(delay)
 )
 
 /**
  * @see [CLEAN_CACHE]
  */
-suspend fun AppConnection.cleanCache() = request(
+suspend fun OneBot11AppConnection.cleanCache() = call(
+    CLEAN_CACHE, Unit
+)
+
+suspend fun OneBot11AppConnection.cleanCacheAsync() = callAsync(
     CLEAN_CACHE, Unit
 )

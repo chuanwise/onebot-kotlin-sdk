@@ -37,7 +37,8 @@ suspend fun <P> doCall(
     objectMapper: ObjectMapper,
     logger: KLogger,
     expect: Expect<P, *>,
-    params: P
+    params: P,
+    async: Boolean
 ): ResponseData<JsonNode?> {
 
     if (expect !is Action) {
@@ -52,7 +53,7 @@ suspend fun <P> doCall(
 
     try {
         val pack = ActionRequestPack(
-            action = expect.name,
+            action = if (async) "${expect.name}_async" else expect.name,
             params = params,
             echo = uuid.toString()
         )
