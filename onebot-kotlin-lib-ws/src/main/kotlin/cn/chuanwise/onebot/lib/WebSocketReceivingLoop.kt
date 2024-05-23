@@ -26,6 +26,7 @@ import io.ktor.websocket.readText
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.launch
 
 /**
  * WebSocket receiving loop, to handle incoming messages.
@@ -70,24 +71,26 @@ class AppWebSocketReceivingLoop(
 
             logger.debug { "Receiving text: $text" }
 
-            val optionalEcho = node.getOptionalNotNull(ECHO)
-            if (optionalEcho === null) {
-                // handle events
-                packBus(node)
-            } else {
-                // handle responses
-                val uuid = UUID.fromString(optionalEcho.asText())
-                val channel = channels.remove(uuid)
+            session.launch {
+                val optionalEcho = node.getOptionalNotNull(ECHO)
+                if (optionalEcho === null) {
+                    // handle events
+                    packBus(node)
+                } else {
+                    // handle responses
+                    val uuid = UUID.fromString(optionalEcho.asText())
+                    val channel = channels.remove(uuid)
 
-                if (channel === null) {
-                    logger.warn {
-                        "Channel of response with uuid `$uuid` not found! " +
-                                "It may cause by response timeout."
+                    if (channel === null) {
+                        logger.warn {
+                            "Channel of response with uuid `$uuid` not found! " +
+                                    "It may cause by response timeout."
+                        }
+                        return@launch
                     }
-                    continue
-                }
 
-                channel.send(node)
+                    channel.send(node)
+                }
             }
         }
     }
