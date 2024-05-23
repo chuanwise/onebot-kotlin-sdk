@@ -46,9 +46,14 @@ class OneBot11LibTest {
         private lateinit var configurations: OneBot11LibTestConfiguration
         private val logger = KotlinLogging.logger { }
 
-        private lateinit var appWebSocketConnection: OneBot11AppWebSocketConnection
-        private lateinit var appReverseWebSocketConnection: OneBot11AppReverseWebSocketConnection
+        private val appWebSocketConnection: OneBot11AppWebSocketConnection by lazy {
+            OneBot11AppWebSocketConnection(configurations.appWebSocketConnection).awaitUtilConnected()
+        }
+        private val appReverseWebSocketConnection: OneBot11AppReverseWebSocketConnection by lazy {
+            OneBot11AppReverseWebSocketConnection(configurations.appReverseWebSocketConnection).awaitUtilConnected()
+        }
 
+        private val appConnection = appReverseWebSocketConnection
 
         @JvmStatic
         fun getResourceURL(path: String): URL {
@@ -67,35 +72,15 @@ class OneBot11LibTest {
         @BeforeAll
         fun beforeAll() {
             val objectMapper = jacksonObjectMapper()
-            logger
             configurations = getResourceURL("configurations.json").let {
                 objectMapper.readValue(it, OneBot11LibTestConfiguration::class.java)
-            } ?: throw IllegalStateException(
-                "Cannot find configurations.json, " +
-                        "edit and rename `configurations.json.example` to `configurations.json` " +
-                        "."
-            )
-
-            appWebSocketConnection = OneBot11AppWebSocketConnection(configurations.appWebSocketConnection)
-            logger.info { "Connecting to WebSocket..." }
-
-            appWebSocketConnection.awaitUtilConnected()
-            logger.info { "Connected to WebSocket." }
-
-            appReverseWebSocketConnection = OneBot11AppReverseWebSocketConnection(
-                configurations.appReverseWebSocketConnection
-            )
-            logger.info { "Connecting to Reverse WebSocket..." }
-
-            appReverseWebSocketConnection.awaitUtilConnected()
-            logger.info { "Connected to Reverse WebSocket." }
+            }
         }
 
         @JvmStatic
         @AfterAll
         fun afterAll() {
-            appWebSocketConnection.close()
-            appReverseWebSocketConnection.close()
+            appConnection.close()
         }
     }
 
@@ -156,7 +141,7 @@ class OneBot11LibTest {
         }
 
         listOf(singleTextMessageData, textMessageInCQFormat, catImageData).forEach {
-            appWebSocketConnection.sendPrivateMessage(
+            appConnection.sendPrivateMessage(
                 userID = configurations.friendUserID,
                 message = it,
             )
@@ -166,7 +151,7 @@ class OneBot11LibTest {
     @Test
     fun testSendGroupMessage(): Unit = runBlocking {
         listOf(shakingData, recordData).forEach {
-            appWebSocketConnection.sendGroupMessage(
+            appConnection.sendGroupMessage(
                 groupID = configurations.botIsAdminGroupID,
                 message = it,
             )
@@ -175,28 +160,28 @@ class OneBot11LibTest {
 
     @Test
     fun testSendAndRecallMessage(): Unit = runBlocking {
-        val groupMessageID = appWebSocketConnection.sendMessage(
+        val groupMessageID = appConnection.sendMessage(
             messageType = GROUP,
             groupID = configurations.botIsAdminGroupID,
             userID = null,
             message = textMessageWithAtFriend,
         )
         delay(5000)
-        appWebSocketConnection.deleteMessage(groupMessageID)
+        appConnection.deleteMessage(groupMessageID)
 
-        val privateMessageID = appWebSocketConnection.sendMessage(
+        val privateMessageID = appConnection.sendMessage(
             messageType = PRIVATE,
             groupID = null,
             userID = configurations.friendUserID,
             message = shakingData,
         )
         delay(5000)
-        appWebSocketConnection.deleteMessage(privateMessageID)
+        appConnection.deleteMessage(privateMessageID)
     }
 
     @Test
     fun testGetGroupInfo(): Unit = runBlocking {
-        appWebSocketConnection.getLoginInfo()
+        appConnection.getLoginInfo()
     }
 
 
@@ -207,7 +192,7 @@ class OneBot11LibTest {
 
     @Test
     fun testSendLike(): Unit = runBlocking {
-        appWebSocketConnection.sendLike(
+        appConnection.sendLike(
             userID = configurations.friendUserID,
             times = 10
         )
@@ -215,7 +200,7 @@ class OneBot11LibTest {
 
     @Test
     fun testSetGroupKick(): Unit = runBlocking {
-        appWebSocketConnection.setGroupKick(
+        appConnection.setGroupKick(
             groupID = configurations.botIsAdminAndOtherIsMember.groupID,
             userID = configurations.botIsAdminAndOtherIsMember.userID,
             rejectAddRequest = false
@@ -224,7 +209,7 @@ class OneBot11LibTest {
 
     @Test
     fun testSetGroupBan(): Unit = runBlocking {
-        appWebSocketConnection.setGroupBan(
+        appConnection.setGroupBan(
             groupID = configurations.botIsAdminAndOtherIsMember.groupID,
             userID = configurations.botIsAdminAndOtherIsMember.userID,
             duration = 114L
@@ -233,12 +218,12 @@ class OneBot11LibTest {
 
     @Test
     fun testSetGroupWholeBan(): Unit = runBlocking {
-        appWebSocketConnection.setGroupWholeBan(
+        appConnection.setGroupWholeBan(
             groupID = configurations.botIsAdminAndOtherIsMember.userID,
             enable = true
         )
         delay(5000)
-        appWebSocketConnection.setGroupWholeBan(
+        appConnection.setGroupWholeBan(
             groupID = configurations.botIsAdminAndOtherIsMember.groupID,
             enable = true
         )
@@ -246,7 +231,7 @@ class OneBot11LibTest {
 
     @Test
     fun testSetGroupAdmin(): Unit = runBlocking {
-        appWebSocketConnection.setGroupAdmin(
+        appConnection.setGroupAdmin(
             groupID = configurations.botIsOwnerAndOtherIsMember.groupID,
             userID = configurations.botIsOwnerAndOtherIsMember.userID,
             enable = true
@@ -254,7 +239,7 @@ class OneBot11LibTest {
 
         delay(5000)
 
-        appWebSocketConnection.setGroupAdmin(
+        appConnection.setGroupAdmin(
             groupID = configurations.botIsOwnerAndOtherIsMember.groupID,
             userID = configurations.botIsOwnerAndOtherIsMember.userID,
             enable = false
@@ -263,14 +248,14 @@ class OneBot11LibTest {
 
     @Test
     fun testSetGroupAnonymous(): Unit = runBlocking {
-        appWebSocketConnection.setGroupAnonymous(
+        appConnection.setGroupAnonymous(
             groupID = configurations.botIsOwnerAndOtherIsMember.groupID,
             enable = true
         )
 
         delay(5000)
 
-        appWebSocketConnection.setGroupAnonymous(
+        appConnection.setGroupAnonymous(
             groupID = configurations.botIsOwnerAndOtherIsMember.groupID,
             enable = false
         )
@@ -278,7 +263,7 @@ class OneBot11LibTest {
 
     @Test
     fun testSetGroupCard(): Unit = runBlocking {
-        appWebSocketConnection.setGroupCard(
+        appConnection.setGroupCard(
             groupID = configurations.botIsAdminAndOtherIsMember.groupID,
             userID = configurations.botIsAdminAndOtherIsMember.userID,
             card = "Test Group Card"
@@ -286,7 +271,7 @@ class OneBot11LibTest {
 
         delay(5000)
 
-        appWebSocketConnection.setGroupCard(
+        appConnection.setGroupCard(
             groupID = configurations.botIsAdminAndOtherIsMember.groupID,
             userID = configurations.botIsAdminAndOtherIsMember.userID,
             card = ""
@@ -306,19 +291,19 @@ class OneBot11LibTest {
 
     @Test
     fun testSetGroupName(): Unit = runBlocking {
-        val group = appWebSocketConnection.getGroupInfo(
+        val group = appConnection.getGroupInfo(
             groupID = configurations.botIsOwnerGroupID,
             noCache = true
         )
 
-        appWebSocketConnection.setGroupName(
+        appConnection.setGroupName(
             groupID = group.groupID,
             groupName = "Test Group Name"
         )
 
         delay(5000)
 
-        appWebSocketConnection.setGroupName(
+        appConnection.setGroupName(
             groupID = group.groupID,
             groupName = group.groupName
         )
@@ -327,7 +312,7 @@ class OneBot11LibTest {
 
     @Test
     fun testSetGroupLeave(): Unit = runBlocking {
-        appWebSocketConnection.setGroupLeave(
+        appConnection.setGroupLeave(
             groupID = configurations.botIsOwnerGroupID,
             isDismiss = true
         )
@@ -335,7 +320,7 @@ class OneBot11LibTest {
 
     @Test
     fun testSetGroupSpecialTitle(): Unit = runBlocking {
-        appWebSocketConnection.setGroupSpecialTitle(
+        appConnection.setGroupSpecialTitle(
             groupID = configurations.botIsOwnerGroupID,
             userID = configurations.friendUserID,
             specialTitle = "TestTitle",
@@ -356,17 +341,17 @@ class OneBot11LibTest {
 
     @Test
     fun testGetLoginInfo(): Unit = runBlocking {
-        appWebSocketConnection.getLoginInfo()
+        appConnection.getLoginInfo()
     }
 
     @Test
     fun testGetFriendList(): Unit = runBlocking {
-        listOf(appWebSocketConnection.getFriendList())
+        listOf(appConnection.getFriendList())
     }
 
     @Test
     fun testGetStrangerInfo(): Unit = runBlocking {
-        appWebSocketConnection.getStrangerInfo(
+        appConnection.getStrangerInfo(
             userID = 10000L,
             noCache = true
         )
@@ -374,14 +359,14 @@ class OneBot11LibTest {
 
     @Test
     fun testGetGroupMemberList(): Unit = runBlocking {
-        appWebSocketConnection.getGroupMemberList(
+        appConnection.getGroupMemberList(
             groupID = configurations.botIsMemberGroupID
         )
     }
 
     @Test
     fun testGetGroupHonorInfo(): Unit = runBlocking {
-        appWebSocketConnection.getGroupHonorInfo(
+        appConnection.getGroupHonorInfo(
             groupID = configurations.botIsMemberGroupID,
             type = "all"
         )
@@ -389,7 +374,7 @@ class OneBot11LibTest {
 
     @Test
     fun testGetCSRFToken(): Unit = runBlocking {
-        appWebSocketConnection.getCSRFToken()
+        appConnection.getCSRFToken()
     }
 
     @Test
@@ -409,33 +394,33 @@ class OneBot11LibTest {
 
     @Test
     fun testCanSendImage(): Unit = runBlocking {
-        appWebSocketConnection.canSendImage()
+        appConnection.canSendImage()
     }
 
     @Test
     fun testCanSendRecord(): Unit = runBlocking {
-        appWebSocketConnection.canSendRecord()
+        appConnection.canSendRecord()
     }
 
     @Test
     fun testGetStatus(): Unit = runBlocking {
-        appWebSocketConnection.getStatus()
+        appConnection.getStatus()
     }
 
     @Test
     fun testGetVersionInfo(): Unit = runBlocking {
-        appWebSocketConnection.getVersionInfo()
+        appConnection.getVersionInfo()
     }
 
     @Test
     fun testSetRestart(): Unit = runBlocking {
-        appWebSocketConnection.setRestart(
+        appConnection.setRestart(
             delay = 2000
         )
     }
 
     @Test
     fun testCleanCache(): Unit = runBlocking {
-        appWebSocketConnection.cleanCache()
+        appConnection.cleanCache()
     }
 }
