@@ -49,6 +49,7 @@ class OneBot11LibTest {
         private lateinit var appWebSocketConnection: OneBot11AppWebSocketConnection
         private lateinit var appReverseWebSocketConnection: OneBot11AppReverseWebSocketConnection
 
+
         @JvmStatic
         fun getResourceURL(path: String): URL {
             val resourceURL = Companion::class.java.classLoader.getResource(path)
@@ -75,11 +76,19 @@ class OneBot11LibTest {
                         "."
             )
 
-            appWebSocketConnection =
-                OneBot11AppWebSocketConnection(configurations.appWebSocketConnection).awaitUtilConnected()
+            appWebSocketConnection = OneBot11AppWebSocketConnection(configurations.appWebSocketConnection)
+            logger.info { "Connecting to WebSocket..." }
+
+            appWebSocketConnection.awaitUtilConnected()
+            logger.info { "Connected to WebSocket." }
+
             appReverseWebSocketConnection = OneBot11AppReverseWebSocketConnection(
                 configurations.appReverseWebSocketConnection
-            ).awaitUtilConnected()
+            )
+            logger.info { "Connecting to Reverse WebSocket..." }
+
+            appReverseWebSocketConnection.awaitUtilConnected()
+            logger.info { "Connected to Reverse WebSocket." }
         }
 
         @JvmStatic
@@ -115,7 +124,8 @@ class OneBot11LibTest {
             url = null,
             cache = 1,
             proxy = 0,
-            timeout = null
+            timeout = null,
+            summary = null
         )
     )
     private val shakingData = SingleMessageData(
@@ -133,6 +143,11 @@ class OneBot11LibTest {
             timeout = null
         )
     )
+
+    @Test
+    fun testEventReceiving(): Unit = runBlocking {
+        delay(1145141919810)
+    }
 
     @Test
     fun testSendPrivateMessage(): Unit = runBlocking {

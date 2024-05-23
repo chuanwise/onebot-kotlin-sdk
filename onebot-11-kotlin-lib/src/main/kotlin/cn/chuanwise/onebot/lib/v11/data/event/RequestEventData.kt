@@ -23,7 +23,6 @@ import cn.chuanwise.onebot.lib.deserializeTo
 import cn.chuanwise.onebot.lib.getNotNull
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.node.ObjectNode
 
@@ -89,11 +88,9 @@ object RequestEventDataDeserializer : StdDeserializer<RequestEventData>(RequestE
     private fun readResolve(): Any = RequestEventDataDeserializer
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): RequestEventData {
         val node = p.readValueAsTree<ObjectNode>()
-        val mapper = p.codec as ObjectMapper
-
         return when (val requestType = node.getNotNull(REQUEST_TYPE).asText()) {
-            FRIEND -> node.deserializeTo<FriendAddRequestEventData>(mapper)
-            GROUP -> node.deserializeTo<GroupAddRequestEventData>(mapper)
+            FRIEND -> node.deserializeTo<FriendAddRequestEventData>(ctxt)
+            GROUP -> node.deserializeTo<GroupAddRequestEventData>(ctxt)
             else -> throw IllegalArgumentException("Unexpected request type: $requestType")
         }
     }

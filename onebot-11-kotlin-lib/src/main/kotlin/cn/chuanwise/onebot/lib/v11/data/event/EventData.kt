@@ -26,7 +26,6 @@ import cn.chuanwise.onebot.lib.getNotNull
 import cn.chuanwise.onebot.lib.v11.data.OneBot11ToAppPack
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.node.ObjectNode
 
@@ -46,13 +45,11 @@ object EventDataDeserializer : StdDeserializer<EventData>(EventData::class.java)
     private fun readResolve(): Any = EventDataDeserializer
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): EventData {
         val node = p.readValueAsTree<ObjectNode>()
-        val mapper = p.codec as ObjectMapper
-
         return when (val postType = node.getNotNull(POST_TYPE).asText()) {
-            MESSAGE -> node.deserializeTo<MessageEventData>(mapper)
-            NOTICE -> node.deserializeTo<NoticeEventData>(mapper)
-            REQUEST -> node.deserializeTo<RequestEventData>(mapper)
-            META_EVENT -> node.deserializeTo<MetaEventData>(mapper)
+            MESSAGE -> node.deserializeTo<MessageEventData>(ctxt)
+            NOTICE -> node.deserializeTo<NoticeEventData>(ctxt)
+            REQUEST -> node.deserializeTo<RequestEventData>(ctxt)
+            META_EVENT -> node.deserializeTo<MetaEventData>(ctxt)
             else -> throw IllegalArgumentException("Unknown post type: $postType")
         }
     }

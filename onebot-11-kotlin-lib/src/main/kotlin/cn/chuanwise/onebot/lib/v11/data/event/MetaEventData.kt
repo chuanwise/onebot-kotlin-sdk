@@ -23,8 +23,6 @@ import cn.chuanwise.onebot.lib.deserializeTo
 import cn.chuanwise.onebot.lib.getNotNull
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.deser.BeanDeserializerFactory
 import com.fasterxml.jackson.databind.deser.std.StdNodeBasedDeserializer
 
 /**
@@ -69,17 +67,9 @@ data class HeartbeatEventData(
 object MetaEventDataDeserializer : StdNodeBasedDeserializer<MetaEventData>(MetaEventData::class.java) {
     private fun readResolve(): Any = MetaEventDataDeserializer
     override fun convert(root: JsonNode, ctxt: DeserializationContext): MetaEventData {
-        val mapper = ctxt.parser.codec as ObjectMapper
-
-        val beanDeserializer = BeanDeserializerFactory.instance.createBeanDeserializer(
-            ctxt,
-            ctxt.typeFactory.constructType(MetaEventData::class.java),
-            ctxt.config.introspect(ctxt.typeFactory.constructType(MetaEventData::class.java))
-        )
-
         return when (val subType = root.getNotNull(META_EVENT_TYPE).asText()) {
-            LIFECYCLE -> root.deserializeTo<LifecycleMetaEventData>(mapper)
-            HEARTBEAT -> root.deserializeTo<HeartbeatEventData>(mapper)
+            LIFECYCLE -> root.deserializeTo<LifecycleMetaEventData>(ctxt)
+            HEARTBEAT -> root.deserializeTo<HeartbeatEventData>(ctxt)
             else -> throw IllegalArgumentException("Unexpected sub type: $subType")
         }
     }

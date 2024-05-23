@@ -19,6 +19,7 @@
 package cn.chuanwise.onebot.lib
 
 import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
@@ -62,8 +63,15 @@ fun JsonNode.getNullable(key: String) = when (this) {
 fun JsonNode.getNotNull(key: String) =
     getOptionalNotNull(key) ?: throw NullPointerException("The value of key '$key' is null.")
 
-fun <T> JsonNode.deserializeTo(objectMapper: ObjectMapper, type: TypeReference<T>) =
-    objectMapper.treeToValue(this, type)
+fun <T> JsonNode.deserializeTo(context: DeserializationContext, type: TypeReference<T>) =
+    context.readTreeAsValue(this, context.constructType(type.type)) as T
 
-inline fun <reified T> JsonNode.deserializeTo(objectMapper: ObjectMapper) =
-    deserializeTo(objectMapper, object : TypeReference<T>() {})
+fun <T> JsonNode.deserializeTo(objectMapper: ObjectMapper, type: TypeReference<T>) =
+    objectMapper.readValue(traverse(objectMapper), type)
+
+inline fun <reified T> JsonNode.deserializeTo(context: DeserializationContext) =
+    deserializeTo(context, object : TypeReference<T>() {})
+
+inline fun <reified T> JsonNode.deserializeTo(objectMapper: ObjectMapper) = deserializeTo(
+    objectMapper, object : TypeReference<T>() {}
+)

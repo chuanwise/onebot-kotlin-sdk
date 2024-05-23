@@ -24,7 +24,6 @@ import cn.chuanwise.onebot.lib.getNotNull
 import cn.chuanwise.onebot.lib.v11.data.message.MessageData
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.PropertyNamingStrategies
 import com.fasterxml.jackson.databind.annotation.JsonNaming
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
@@ -152,11 +151,9 @@ object MessageEventDataDeserializer : StdDeserializer<MessageEventData>(MessageE
     private fun readResolve(): Any = MessageEventDataDeserializer
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): MessageEventData {
         val node = p.readValueAsTree<ObjectNode>()
-        val mapper = p.codec as ObjectMapper
-
         return when (val messageType = node.getNotNull(MESSAGE_TYPE).asText()) {
-            PRIVATE -> node.deserializeTo<PrivateMessageEventData>(mapper)
-            GROUP -> node.deserializeTo<GroupMessageEventData>(mapper)
+            PRIVATE -> node.deserializeTo<PrivateMessageEventData>(ctxt)
+            GROUP -> node.deserializeTo<GroupMessageEventData>(ctxt)
             else -> throw IllegalArgumentException("Unexpected message type: $messageType")
         }
     }

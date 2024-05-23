@@ -45,11 +45,11 @@ import cn.chuanwise.onebot.lib.XML
 import cn.chuanwise.onebot.lib.deserializeTo
 import cn.chuanwise.onebot.lib.getNotNull
 import cn.chuanwise.onebot.lib.getOptionalNotNull
+import cn.chuanwise.onebot.lib.getOptionalNullable
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.PropertyNamingStrategies
 import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
@@ -149,7 +149,10 @@ data class ImageData(
     val proxy: Int?,
 
     // receive only
-    val timeout: Long?
+    val timeout: Long?,
+
+    // for some implementations/
+    val summary: String?
 ) : SegmentData()
 
 data class RecordData(
@@ -291,42 +294,42 @@ data class SerializedData(
 object MessageDataDeserializer : StdDeserializer<MessageData>(MessageData::class.java) {
     private fun readResolve(): Any = MessageDataDeserializer
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): MessageData {
-        val mapper = p.codec as ObjectMapper
         return when (val node = p.codec.readTree<JsonNode>(p)) {
             is ArrayNode -> ArrayMessageData(
                 data = node.map {
-                    p.readValueAs(SingleMessageData::class.java)
+                    it.deserializeTo<SingleMessageData>(ctxt)
                 }
             )
             is ObjectNode -> {
                 val type = node.getNotNull(TYPE).asText()
+                val data = node.getOptionalNullable(DATA)
                 SingleMessageData(
                     type = type,
                     data = when (type) {
-                        TEXT -> node.deserializeTo<TextData>(mapper)
-                        IMAGE -> node.deserializeTo<ImageData>(mapper)
-                        RECORD -> node.deserializeTo<RecordData>(mapper)
-                        VIDEO -> node.deserializeTo<VideoData>(mapper)
-                        AT -> node.deserializeTo<AtData>(mapper)
+                        TEXT -> data.deserializeTo<TextData>(ctxt)
+                        IMAGE -> data.deserializeTo<ImageData>(ctxt)
+                        RECORD -> data.deserializeTo<RecordData>(ctxt)
+                        VIDEO -> data.deserializeTo<VideoData>(ctxt)
+                        AT -> data.deserializeTo<AtData>(ctxt)
                         RPS, DICE, SHAKE, ANONYMOUS -> EmptyData
-                        POKE -> node.deserializeTo<PokeData>(mapper)
-                        SHARE -> node.deserializeTo<ShareData>(mapper)
-                        CONTACT, GROUP -> node.deserializeTo<RecommendationData>(mapper)
-                        LOCATION -> node.deserializeTo<LocationData>(mapper)
-                        MUSIC -> if (node.getOptionalNotNull(TYPE).asText() == CUSTOM) {
-                            node.deserializeTo<CustomMusicRecommendationData>(mapper)
+                        POKE -> data.deserializeTo<PokeData>(ctxt)
+                        SHARE -> data.deserializeTo<ShareData>(ctxt)
+                        CONTACT, GROUP -> data.deserializeTo<RecommendationData>(ctxt)
+                        LOCATION -> data.deserializeTo<LocationData>(ctxt)
+                        MUSIC -> if (data.getOptionalNotNull(TYPE).asText() == CUSTOM) {
+                            data.deserializeTo<CustomMusicRecommendationData>(ctxt)
                         } else {
-                            node.deserializeTo<RecommendationData>(mapper)
+                            data.deserializeTo<RecommendationData>(ctxt)
                         }
 
-                        REPLY, FORWARD, FACE -> node.deserializeTo<IDTag>(mapper)
-                        NODE -> if (node.has(ID)) {
-                            node.deserializeTo<IDTag>(mapper)
+                        REPLY, FORWARD, FACE -> data.deserializeTo<IDTag>(ctxt)
+                        NODE -> if (data.has(ID)) {
+                            data.deserializeTo<IDTag>(ctxt)
                         } else {
-                            node.deserializeTo<SingleForwardNodeData>(mapper)
+                            data.deserializeTo<SingleForwardNodeData>(ctxt)
                         }
 
-                        XML, JSON -> node.deserializeTo<SerializedData>(mapper)
+                        XML, JSON -> data.deserializeTo<SerializedData>(ctxt)
                         else -> throw IllegalArgumentException("Unexpected message type: $type")
                     }
                 )
