@@ -129,10 +129,10 @@ class OneBot11LibTest {
         )
     )
 
-    @Test
-    fun testEventReceiving(): Unit = runBlocking {
-        delay(1145141919810)
-    }
+//    @Test
+//    fun testEventReceiving(): Unit = runBlocking {
+//        delay(1145141919810)
+//    }
 
     @Test
     fun testSendPrivateMessage(): Unit = runBlocking {
@@ -169,6 +169,9 @@ class OneBot11LibTest {
         delay(5000)
         appConnection.deleteMessage(groupMessageID)
 
+        if (!configurations.testSendPrivateMessage) {
+            return@runBlocking
+        }
         val privateMessageID = appConnection.sendMessage(
             messageType = PRIVATE,
             groupID = null,
