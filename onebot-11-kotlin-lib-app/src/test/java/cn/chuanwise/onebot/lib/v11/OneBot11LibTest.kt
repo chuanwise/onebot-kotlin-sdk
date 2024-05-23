@@ -16,30 +16,16 @@
 
 package cn.chuanwise.onebot.lib.v11
 
-import cn.chuanwise.onebot.lib.AT
-import cn.chuanwise.onebot.lib.FACE
-import cn.chuanwise.onebot.lib.GROUP
-import cn.chuanwise.onebot.lib.IMAGE
-import cn.chuanwise.onebot.lib.PRIVATE
-import cn.chuanwise.onebot.lib.RECORD
-import cn.chuanwise.onebot.lib.TEXT
-import cn.chuanwise.onebot.lib.awaitUtilConnected
-import cn.chuanwise.onebot.lib.v11.data.message.ArrayMessageData
-import cn.chuanwise.onebot.lib.v11.data.message.AtData
-import cn.chuanwise.onebot.lib.v11.data.message.CQCodeMessageData
-import cn.chuanwise.onebot.lib.v11.data.message.IDTag
-import cn.chuanwise.onebot.lib.v11.data.message.ImageData
-import cn.chuanwise.onebot.lib.v11.data.message.RecordData
-import cn.chuanwise.onebot.lib.v11.data.message.SingleMessageData
-import cn.chuanwise.onebot.lib.v11.data.message.TextData
+import cn.chuanwise.onebot.lib.*
+import cn.chuanwise.onebot.lib.v11.data.message.*
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.github.oshai.kotlinlogging.KotlinLogging
-import java.net.URL
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
+import java.net.URL
 
 class OneBot11LibTest {
     companion object {
@@ -53,7 +39,7 @@ class OneBot11LibTest {
         fun getResourceURL(path: String): URL {
             val resourceURL = Companion::class.java.classLoader.getResource(path)
             if (resourceURL === null) {
-                val examplePath = path + ".example"
+                val examplePath = "$path.example"
                 throw IllegalStateException(
                     "Cannot find resource: $path, edit and rename `$examplePath` to `$path` " +
                             "in the test resources directory `onebot-11-kotlin-lib-app/src/test/resources` and try again."
@@ -66,7 +52,7 @@ class OneBot11LibTest {
         @BeforeAll
         fun beforeAll() {
             val objectMapper = jacksonObjectMapper()
-
+            logger
             configurations = getResourceURL("configurations.json").let {
                 objectMapper.readValue(it, OneBot11LibTestConfiguration::class.java)
             } ?: throw IllegalStateException(
@@ -178,4 +164,251 @@ class OneBot11LibTest {
         delay(5000)
         appWebSocketConnection.deleteMessage(privateMessageID)
     }
+
+    @Test
+    fun testGetGroupInfo(): Unit = runBlocking {
+        appWebSocketConnection.getLoginInfo()
+    }
+
+
+    @Test
+    fun getForwardMessage(): Unit = runBlocking {
+        TODO()
+    }
+
+    @Test
+    fun testSendLike(): Unit = runBlocking {
+        appWebSocketConnection.sendLike(
+            userID = configurations.friendUserID,
+            times = 10
+        )
+    }
+
+    @Test
+    fun testSetGroupKick(): Unit = runBlocking {
+        appWebSocketConnection.setGroupKick(
+            groupID = configurations.botIsAdminAndOtherIsMember.groupID,
+            userID = configurations.botIsAdminAndOtherIsMember.userID,
+            rejectAddsend = false
+        )
+    }
+
+    @Test
+    fun testSetGroupBan(): Unit = runBlocking {
+        appWebSocketConnection.setGroupBan(
+            groupID = configurations.botIsAdminAndOtherIsMember.groupID,
+            userID = configurations.botIsAdminAndOtherIsMember.userID,
+            duration = 114L
+        )
+    }
+
+    @Test
+    fun testSetGroupWholeBan(): Unit = runBlocking {
+        appWebSocketConnection.setGroupWholeBan(
+            groupID = configurations.botIsAdminAndOtherIsMember.userID,
+            enable = true
+        )
+        delay(5000)
+        appWebSocketConnection.setGroupWholeBan(
+            groupID = configurations.botIsAdminAndOtherIsMember.groupID,
+            enable = true
+        )
+    }
+
+    @Test
+    fun testSetGroupAdmin(): Unit = runBlocking {
+        appWebSocketConnection.setGroupAdmin(
+            groupID = configurations.botIsOwnerAndOtherIsMember.groupID,
+            userID = configurations.botIsOwnerAndOtherIsMember.userID,
+            enable = true
+        )
+
+        delay(5000)
+
+        appWebSocketConnection.setGroupAdmin(
+            groupID = configurations.botIsOwnerAndOtherIsMember.groupID,
+            userID = configurations.botIsOwnerAndOtherIsMember.userID,
+            enable = false
+        )
+    }
+
+    @Test
+    fun testSetGroupAnonymous(): Unit = runBlocking {
+        appWebSocketConnection.setGroupAnonymous(
+            groupID = configurations.botIsOwnerAndOtherIsMember.groupID,
+            enable = true
+        )
+
+        delay(5000)
+
+        appWebSocketConnection.setGroupAnonymous(
+            groupID = configurations.botIsOwnerAndOtherIsMember.groupID,
+            enable = false
+        )
+    }
+
+    @Test
+    fun testSetGroupCard(): Unit = runBlocking {
+        appWebSocketConnection.setGroupCard(
+            groupID = configurations.botIsAdminAndOtherIsMember.groupID,
+            userID = configurations.botIsAdminAndOtherIsMember.userID,
+            card = "Test Group Card"
+        )
+
+        delay(5000)
+
+        appWebSocketConnection.setGroupCard(
+            groupID = configurations.botIsAdminAndOtherIsMember.groupID,
+            userID = configurations.botIsAdminAndOtherIsMember.userID,
+            card = ""
+        )
+
+    }
+
+    @Test
+    fun testSetGroupAnonymousBanByAnonymousSenderData(): Unit = runBlocking {
+        TODO()
+    }
+
+    @Test
+    fun testSetGroupAnonymousBanByFlag(): Unit = runBlocking {
+        TODO()
+    }
+
+    @Test
+    fun testSetGroupName(): Unit = runBlocking {
+        val group = appWebSocketConnection.getGroupInfo(
+            groupID = configurations.botIsOwnerGroupID,
+            noCache = true
+        )
+
+        appWebSocketConnection.setGroupName(
+            groupID = group.groupID,
+            groupName = "Test Group Name"
+        )
+
+        delay(5000)
+
+        appWebSocketConnection.setGroupName(
+            groupID = group.groupID,
+            groupName = group.groupName
+        )
+
+    }
+
+    @Test
+    fun testSetGroupLeave(): Unit = runBlocking {
+        appWebSocketConnection.setGroupLeave(
+            groupID = configurations.botIsOwnerGroupID,
+            isDismiss = true
+        )
+    }
+
+    @Test
+    fun testSetGroupSpecialTitle(): Unit = runBlocking {
+        appWebSocketConnection.setGroupSpecialTitle(
+            groupID = configurations.botIsOwnerGroupID,
+            userID = configurations.friendUserID,
+            specialTitle = "TestTitle",
+            duration = 3600L
+        )
+
+    }
+
+    @Test
+    fun testSetFriendAddRequest(): Unit = runBlocking {
+        TODO()
+    }
+
+    @Test
+    fun testSetGroupAddRequest(): Unit = runBlocking {
+        TODO()
+    }
+
+    @Test
+    fun testGetLoginInfo(): Unit = runBlocking {
+        appWebSocketConnection.getLoginInfo()
+    }
+
+    @Test
+    fun testGetFriendList(): Unit = runBlocking {
+        listOf(appWebSocketConnection.getFriendList())
+    }
+
+    @Test
+    fun testGetStrangerInfo(): Unit = runBlocking {
+        appWebSocketConnection.getStrangerInfo(
+            userID = 10000L,
+            noCache = true
+        )
+    }
+
+    @Test
+    fun testGetGroupMemberList(): Unit = runBlocking {
+        appWebSocketConnection.getGroupMemberList(
+            groupID = configurations.botIsMemberGroupID
+        )
+    }
+
+    @Test
+    fun testGetGroupHonorInfo(): Unit = runBlocking {
+        appWebSocketConnection.getGroupHonorInfo(
+            groupID = configurations.botIsMemberGroupID,
+            type = "all"
+        )
+    }
+
+    @Test
+    fun testGetCSRFToken(): Unit = runBlocking {
+        appWebSocketConnection.getCSRFToken()
+    }
+
+    @Test
+    fun testGetCredentials(): Unit = runBlocking {
+        TODO()
+    }
+
+    @Test
+    fun testGetCookies(): Unit = runBlocking {
+        TODO()
+    }
+
+    @Test
+    fun testGetImage(): Unit = runBlocking {
+        TODO()
+    }
+
+    @Test
+    fun testCanSendImage(): Unit = runBlocking {
+        appWebSocketConnection.canSendImage()
+    }
+
+    @Test
+    fun testCanSendRecord(): Unit = runBlocking {
+        appWebSocketConnection.canSendRecord()
+    }
+
+    @Test
+    fun testGetStatus(): Unit = runBlocking {
+        appWebSocketConnection.getStatus()
+    }
+
+    @Test
+    fun testGetVersionInfo(): Unit = runBlocking {
+        appWebSocketConnection.getVersionInfo()
+    }
+
+    @Test
+    fun testSetRestart(): Unit = runBlocking {
+        appWebSocketConnection.setRestart(
+            delay = 2000
+        )
+    }
+
+    @Test
+    fun testCleanCache(): Unit = runBlocking {
+        appWebSocketConnection.cleanCache()
+    }
+
+
 }
