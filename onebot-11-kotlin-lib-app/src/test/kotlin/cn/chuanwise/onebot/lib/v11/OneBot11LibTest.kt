@@ -181,10 +181,10 @@ class OneBot11LibTest {
 
     @Test
     fun testGetForwardMessage(): Unit = runBlocking {
-        appReverseWebSocketConnection.events<MessageEventData> { event ->
+        appConnection.events<MessageEventData> { event ->
             launch {
                 if (event.messageType != FORWARD) return@launch
-                appReverseWebSocketConnection.getMessage(event.messageID.toInt())
+                appConnection.getMessage(event.messageID.toInt())
             }
         }
     }
@@ -280,11 +280,11 @@ class OneBot11LibTest {
 
     @Test
     fun testSetGroupAnonymousBanByAnonymousSenderData(): Unit = runBlocking {
-        appReverseWebSocketConnection.events<GroupMessageEventData> { event ->
+        appConnection.events<GroupMessageEventData> { event ->
 
             launch {
                 val anonymous = event.anonymous ?: return@launch
-                appReverseWebSocketConnection.setGroupAnonymousBan(
+                appConnection.setGroupAnonymousBan(
                     groupID = event.groupID,
                     sender = anonymous,
                     duration = 114L
@@ -296,10 +296,10 @@ class OneBot11LibTest {
 
     @Test
     fun testSetGroupAnonymousBanByFlag(): Unit = runBlocking {
-        appReverseWebSocketConnection.events<GroupMessageEventData> { event ->
+        appConnection.events<GroupMessageEventData> { event ->
             launch {
                 val anonymous = event.anonymous ?: return@launch
-                appReverseWebSocketConnection.setGroupAnonymousBan(
+                appConnection.setGroupAnonymousBan(
                     groupID = event.groupID,
                     flag = anonymous.flag,
                     duration = 114L
@@ -350,9 +350,9 @@ class OneBot11LibTest {
 
     @Test
     fun testSetFriendAddRequest(): Unit = runBlocking {
-        appReverseWebSocketConnection.events<FriendAddRequestEventData> { event ->
+        appConnection.events<FriendAddRequestEventData> { event ->
             launch {
-                appReverseWebSocketConnection.setFriendAddRequest(
+                appConnection.setFriendAddRequest(
                     flag = event.flag,
                     approve = true,
                     remark = ""
@@ -363,9 +363,9 @@ class OneBot11LibTest {
 
     @Test
     fun testSetGroupAddRequest(): Unit = runBlocking {
-        appReverseWebSocketConnection.events<GroupAddRequestEventData> { event ->
+        appConnection.events<GroupAddRequestEventData> { event ->
             launch {
-                appReverseWebSocketConnection.setFriendAddRequestAsync(
+                appConnection.setFriendAddRequestAsync(
                     flag = event.flag,
                     approve = true,
                     remark = ""
@@ -439,7 +439,7 @@ class OneBot11LibTest {
 
     @Test
     fun testGetImage(): Unit = runBlocking {
-        appConnection.sendMessage(
+        val messageID = appConnection.sendMessage(
             messageType = IMAGE,
             message = SingleMessageData(
                 data = ImageData(
@@ -455,6 +455,14 @@ class OneBot11LibTest {
             ),
             userID = null,
             groupID = configurations.botIsAdminGroupID
+        )
+        val image = when(val data = appConnection.getMessage(messageID).message){
+            is ArrayMessageData -> data.data.firstOrNull()?.data as ImageData
+            is SingleMessageData -> data.data as ImageData
+            else -> throw IllegalStateException()
+        }
+        appConnection.getImage(
+            file = image.file
         )
     }
 
