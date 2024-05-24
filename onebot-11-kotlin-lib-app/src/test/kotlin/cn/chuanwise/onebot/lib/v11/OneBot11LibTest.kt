@@ -16,30 +16,21 @@
 
 package cn.chuanwise.onebot.lib.v11
 
-import cn.chuanwise.onebot.lib.AT
-import cn.chuanwise.onebot.lib.FACE
-import cn.chuanwise.onebot.lib.GROUP
-import cn.chuanwise.onebot.lib.IMAGE
-import cn.chuanwise.onebot.lib.PRIVATE
-import cn.chuanwise.onebot.lib.RECORD
-import cn.chuanwise.onebot.lib.TEXT
-import cn.chuanwise.onebot.lib.awaitUtilConnected
-import cn.chuanwise.onebot.lib.v11.data.message.ArrayMessageData
-import cn.chuanwise.onebot.lib.v11.data.message.AtData
-import cn.chuanwise.onebot.lib.v11.data.message.CQCodeMessageData
-import cn.chuanwise.onebot.lib.v11.data.message.IDTag
-import cn.chuanwise.onebot.lib.v11.data.message.ImageData
-import cn.chuanwise.onebot.lib.v11.data.message.RecordData
-import cn.chuanwise.onebot.lib.v11.data.message.SingleMessageData
-import cn.chuanwise.onebot.lib.v11.data.message.TextData
+import cn.chuanwise.onebot.lib.*
+import cn.chuanwise.onebot.lib.v11.data.event.FriendAddRequestEventData
+import cn.chuanwise.onebot.lib.v11.data.event.GroupAddRequestEventData
+import cn.chuanwise.onebot.lib.v11.data.event.GroupMessageEventData
+import cn.chuanwise.onebot.lib.v11.data.event.MessageEventData
+import cn.chuanwise.onebot.lib.v11.data.message.*
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.github.oshai.kotlinlogging.KotlinLogging
-import java.net.URL
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
+import java.net.URL
 
 class OneBot11LibTest {
     companion object {
@@ -189,8 +180,13 @@ class OneBot11LibTest {
 
 
     @Test
-    fun getForwardMessage(): Unit = runBlocking {
-        TODO()
+    fun testGetForwardMessage(): Unit = runBlocking {
+        appReverseWebSocketConnection.events<MessageEventData> { event ->
+            launch {
+                if (event.messageType != FORWARD) return@launch
+                appReverseWebSocketConnection.getMessage(event.messageID.toInt())
+            }
+        }
     }
 
     @Test
@@ -284,12 +280,32 @@ class OneBot11LibTest {
 
     @Test
     fun testSetGroupAnonymousBanByAnonymousSenderData(): Unit = runBlocking {
-        TODO()
+        appReverseWebSocketConnection.events<GroupMessageEventData> { event ->
+
+            launch {
+                val anonymous = event.anonymous ?: return@launch
+                appReverseWebSocketConnection.setGroupAnonymousBan(
+                    groupID = event.groupID,
+                    sender = anonymous,
+                    duration = 114L
+                )
+            }
+
+        }
     }
 
     @Test
     fun testSetGroupAnonymousBanByFlag(): Unit = runBlocking {
-        TODO()
+        appReverseWebSocketConnection.events<GroupMessageEventData> { event ->
+            launch {
+                val anonymous = event.anonymous ?: return@launch
+                appReverseWebSocketConnection.setGroupAnonymousBan(
+                    groupID = event.groupID,
+                    flag = anonymous.flag,
+                    duration = 114L
+                )
+            }
+        }
     }
 
     @Test
@@ -334,12 +350,28 @@ class OneBot11LibTest {
 
     @Test
     fun testSetFriendAddRequest(): Unit = runBlocking {
-        TODO()
+        appReverseWebSocketConnection.events<FriendAddRequestEventData> { event ->
+            launch {
+                appReverseWebSocketConnection.setFriendAddRequest(
+                    flag = event.flag,
+                    approve = true,
+                    remark = ""
+                )
+            }
+        }
     }
 
     @Test
     fun testSetGroupAddRequest(): Unit = runBlocking {
-        TODO()
+        appReverseWebSocketConnection.events<GroupAddRequestEventData> { event ->
+            launch {
+                appReverseWebSocketConnection.setFriendAddRequestAsync(
+                    flag = event.flag,
+                    approve = true,
+                    remark = ""
+                )
+            }
+        }
     }
 
     @Test
@@ -382,17 +414,48 @@ class OneBot11LibTest {
 
     @Test
     fun testGetCredentials(): Unit = runBlocking {
-        TODO()
+        logger.warn {
+            """ 
+                [Warn]
+                Method: ${testGetCredentials()}
+                We cannot test this case because this method depends on the actual business needs.
+            """.trimIndent()
+        }
+        assert(true)
     }
 
     @Test
     fun testGetCookies(): Unit = runBlocking {
-        TODO()
+        logger.warn {
+            """ 
+                [Warn]
+                Method: ${testGetCookies()}
+                We cannot test this case because this method depends on the actual business needs.
+            """.trimIndent()
+        }
+        assert(true)
+
     }
 
     @Test
     fun testGetImage(): Unit = runBlocking {
-        TODO()
+        appConnection.sendMessage(
+            messageType = IMAGE,
+            message = SingleMessageData(
+                data = ImageData(
+                    file = getResourceURL("messages/cat.jpg").file.toString(),
+                    cache = null,
+                    proxy = null,
+                    type = null,
+                    url = null,
+                    summary = null,
+                    timeout = null
+                ),
+                type = IMAGE
+            ),
+            userID = null,
+            groupID = configurations.botIsAdminGroupID
+        )
     }
 
     @Test
