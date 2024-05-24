@@ -15,7 +15,7 @@
  */
 
 plugins {
-    kotlin("jvm") version "1.9.10"
+    kotlin("jvm") version "2.0.0-RC3"
 }
 
 allprojects {
