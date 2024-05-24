@@ -44,7 +44,7 @@ class OneBot11AppPackBus(
         }
 
         handle(eventData)?.takeIf { it != Unit }?.let {
-            connection.send(
+            connection.call(
                 HIDDEN_HANDLE_QUICK_OPERATION, HandleQuickOperationData(
                     context = eventData,
                     operation = it,

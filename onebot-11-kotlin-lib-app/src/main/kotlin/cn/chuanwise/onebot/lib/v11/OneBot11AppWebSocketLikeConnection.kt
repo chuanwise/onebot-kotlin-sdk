@@ -20,9 +20,10 @@ import cn.chuanwise.onebot.lib.Action
 import cn.chuanwise.onebot.lib.AppWebSocketReceivingLoop
 import cn.chuanwise.onebot.lib.Expect
 import cn.chuanwise.onebot.lib.deserializeTo
-import cn.chuanwise.onebot.lib.v11.data.BAD_REQUEST_RET_CODE
-import cn.chuanwise.onebot.lib.v11.data.SUCCESS_RET_CODE
-import cn.chuanwise.onebot.lib.v11.data.UNSUPPORTED_OPERATION_RET_CODE
+import cn.chuanwise.onebot.lib.v11.data.ASYNC_RETCODE
+import cn.chuanwise.onebot.lib.v11.data.BAD_REQUEST_RETCODE
+import cn.chuanwise.onebot.lib.v11.data.SUCCESS_RETCODE
+import cn.chuanwise.onebot.lib.v11.data.UNSUPPORTED_OPERATION_RETCODE
 import cn.chuanwise.onebot.lib.v11.data.action.ActionRequestPack
 import cn.chuanwise.onebot.lib.v11.data.action.ResponseData
 import com.fasterxml.jackson.databind.JsonNode
@@ -31,6 +32,19 @@ import io.github.oshai.kotlinlogging.KLogger
 import io.ktor.websocket.Frame
 import io.ktor.websocket.WebSocketSession
 
+/**
+ * The policy of calling defined in
+ * [OneBot 11 API](https://github.com/botuniverse/onebot-11/blob/d4456ee706f9ada9c2dfde56a2bcfc69752600e4/api/README.md).
+ *
+ * @author Chuanwise
+ */
+enum class CallPolicy(val suffix: String = "") {
+    // sync, or async (depends on action itself).
+    DEFAULT,
+    ASYNC("_async"),
+    RATE_LIMITED("_rate_limited"),
+}
+
 suspend fun <P> doCall(
     session: WebSocketSession?,
     receivingLoop: AppWebSocketReceivingLoop,
@@ -38,7 +52,7 @@ suspend fun <P> doCall(
     logger: KLogger,
     expect: Expect<P, *>,
     params: P,
-    async: Boolean
+    callPolicy: CallPolicy
 ): ResponseData<JsonNode?> {
 
     if (expect !is Action) {
@@ -53,7 +67,7 @@ suspend fun <P> doCall(
 
     try {
         val pack = ActionRequestPack(
-            action = if (async) "${expect.name}_async" else expect.name,
+            action = expect.name + callPolicy.suffix,
             params = params,
             echo = uuid.toString()
         )
@@ -66,36 +80,12 @@ suspend fun <P> doCall(
         val resp = node.deserializeTo<ResponseData<JsonNode?>>(objectMapper)
 
         return when (resp.retCode) {
-            SUCCESS_RET_CODE -> resp
-            UNSUPPORTED_OPERATION_RET_CODE -> throw UnsupportedOperationException("Unsupported operation.")
-            BAD_REQUEST_RET_CODE -> throw IllegalArgumentException("Bad request.")
-            else -> throw IllegalStateException("Unknown error.")
+            SUCCESS_RETCODE, ASYNC_RETCODE -> resp
+            UNSUPPORTED_OPERATION_RETCODE -> throw UnsupportedOperationException("Unsupported operation.")
+            BAD_REQUEST_RETCODE -> throw IllegalArgumentException("Bad request.")
+            else -> throw IllegalStateException("Unexpected response return code: ${resp.retCode}.")
         }
     } finally {
         receivingLoop.unregisterChannel(uuid)
     }
-}
-
-suspend fun <P> doSend(
-    session: WebSocketSession?,
-    objectMapper: ObjectMapper,
-    logger: KLogger,
-    expect: Expect<P, *>,
-    params: P
-) {
-    if (expect !is Action) {
-        throw IllegalArgumentException("The expect must be an action for app connection.")
-    }
-    if (session === null) {
-        throw IllegalStateException("Connection is not established.")
-    }
-
-    val pack = ActionRequestPack(
-        action = expect.name,
-        params = params,
-    )
-    val string = objectMapper.writeValueAsString(pack)
-
-    logger.debug { "Sending: $string" }
-    session.send(Frame.Text(string))
 }

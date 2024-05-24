@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package cn.chuanwise.onebot.lib.v11.data
+package cn.chuanwise.onebot.lib.v11
 
-import cn.chuanwise.onebot.lib.ToImplPack
-
-
-interface OneBot11ToImplPack : ToImplPack
+class OneBot11AppHTTPConnection {
+}

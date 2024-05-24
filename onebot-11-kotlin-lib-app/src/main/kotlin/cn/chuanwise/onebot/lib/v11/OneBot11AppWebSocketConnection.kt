@@ -122,13 +122,9 @@ class OneBot11AppWebSocketConnection private constructor(
         logger: KLogger = KotlinLogging.logger { },
     ) : this(objectMapper, logger, configuration)
 
-    override suspend fun <P> send(expect: Expect<P, Unit>, params: P) {
-        doSend(session, objectMapper, logger, expect, params)
-    }
-
     @Suppress("UNCHECKED_CAST")
     override suspend fun <P, R> call(expect: Expect<P, R>, params: P): R {
-        val resp = doCall(session, receivingLoop, objectMapper, logger, expect, params, false)
+        val resp = doCall(session, receivingLoop, objectMapper, logger, expect, params, CallPolicy.DEFAULT)
         return when (resp.status) {
             OK -> resp.data?.deserializeTo(objectMapper, expect.respType) ?: Unit as R
             ASYNC -> throw IllegalStateException("Async response.")
@@ -138,12 +134,22 @@ class OneBot11AppWebSocketConnection private constructor(
     }
 
     override suspend fun <P> callAsync(expect: Expect<P, *>, params: P) {
-        val resp = doCall(session, receivingLoop, objectMapper, logger, expect, params, true)
+        val resp = doCall(session, receivingLoop, objectMapper, logger, expect, params, CallPolicy.ASYNC)
         return when (resp.status) {
             OK -> throw IllegalStateException("Not async response.")
             ASYNC -> Unit
             FAILED -> throw IllegalStateException("Failed.")
             else -> throw IllegalStateException("Unknown response status: ${resp.status}")
+        }
+    }
+
+    override suspend fun <P> callRateLimited(expect: Expect<P, *>, params: P) {
+        val resp = doCall(session, receivingLoop, objectMapper, logger, expect, params, CallPolicy.RATE_LIMITED)
+        return when (resp.status) {
+            OK -> throw IllegalStateException("Not async response.")
+            ASYNC -> Unit
+            FAILED -> throw IllegalStateException("Failed.")
+            else -> throw IllegalStateException("Unknown error.")
         }
     }
 

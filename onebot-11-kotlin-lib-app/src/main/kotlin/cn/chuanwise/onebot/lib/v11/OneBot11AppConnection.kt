@@ -21,6 +21,6 @@ import cn.chuanwise.onebot.lib.Expect
 
 interface OneBot11AppConnection : AppConnection {
     // for quick operations.
-    suspend fun <P> send(expect: Expect<P, Unit>, params: P)
     suspend fun <P> callAsync(expect: Expect<P, *>, params: P)
+    suspend fun <P> callRateLimited(expect: Expect<P, *>, params: P)
 }

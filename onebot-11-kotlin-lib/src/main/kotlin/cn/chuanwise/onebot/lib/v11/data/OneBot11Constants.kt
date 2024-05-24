@@ -23,7 +23,8 @@ const val OK = "ok"
 
 const val ASYNC = "async"
 
-const val UNSUPPORTED_OPERATION_RET_CODE = 1404
-const val BAD_REQUEST_RET_CODE = 1400
-const val SUCCESS_RET_CODE = 0
+const val UNSUPPORTED_OPERATION_RETCODE = 1404
+const val BAD_REQUEST_RETCODE = 1400
+const val SUCCESS_RETCODE = 0
+const val ASYNC_RETCODE = 1
 
