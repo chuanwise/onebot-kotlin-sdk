@@ -18,6 +18,7 @@ package cn.chuanwise.onebot.lib.v11
 
 import cn.chuanwise.onebot.lib.AT
 import cn.chuanwise.onebot.lib.FACE
+import cn.chuanwise.onebot.lib.FLASH
 import cn.chuanwise.onebot.lib.FORWARD
 import cn.chuanwise.onebot.lib.GROUP
 import cn.chuanwise.onebot.lib.IMAGE
@@ -293,6 +294,7 @@ class OneBot11LibTest {
                 )
             }
         }
+        delay(114514)
     }
 
     @Test
@@ -366,6 +368,7 @@ class OneBot11LibTest {
                 approve = true,
             )
         }
+        delay(114514)
     }
 
     @Test
@@ -376,6 +379,7 @@ class OneBot11LibTest {
                 approve = true
             )
         }
+        delay(114514)
     }
 
     @Test
@@ -500,5 +504,24 @@ class OneBot11LibTest {
     @Test
     fun testCleanCache(): Unit = runBlocking {
         appConnection.cleanCache()
+    }
+
+    @Test
+    fun testSendFlashImage(): Unit = runBlocking {
+        appConnection.sendGroupMessage(
+            groupID = configurations.botIsAdminGroupID,
+            message = SingleMessageData(
+                type = IMAGE,
+                data = ImageData(
+                    file = getResourceURL("messages/cat.jpg").toString(),
+                    cache = 1,
+                    proxy = 0,
+                    type = FLASH,
+                    url = null,
+                    summary = null,
+                    timeout = null
+                )
+            )
+        )
     }
 }
