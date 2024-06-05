@@ -110,7 +110,7 @@ class OneBot11AppWebSocketConnection private constructor(
             val interval = configuration.heartbeatInterval ?: continue
 
             val watchDog = WatchDog(interval)
-            val feederUUID = incomingChannel.registerListener(HEARTBEAT_EVENT) {
+            val feederUUID = incomingChannel.registerListener(HEARTBEAT_META_EVENT) {
                 watchDog.feed()
             }
             val hungryDetector = launch {

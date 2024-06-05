@@ -60,7 +60,7 @@ data class FileData(
     val busid: Long,
 )
 
-data class GroupFileUploadEventData(
+data class GroupFileUploadNoticeEventData(
     override val time: Long,
     override val selfID: Long,
 
@@ -76,7 +76,7 @@ data class GroupFileUploadEventData(
 ) : NoticeEventData
 
 
-data class GroupAdminChangedEventData(
+data class GroupAdminChangedNoticeEventData(
     override val time: Long,
     override val selfID: Long,
 
@@ -94,7 +94,7 @@ data class GroupAdminChangedEventData(
 ) : NoticeEventData
 
 
-data class GroupMemberChangedEventData(
+data class GroupMemberChangedNoticeEventData(
     override val time: Long,
     override val selfID: Long,
 
@@ -114,7 +114,7 @@ data class GroupMemberChangedEventData(
 ) : NoticeEventData
 
 
-data class GroupMuteEventData(
+data class GroupMuteNoticeEventData(
     override val time: Long,
     override val selfID: Long,
 
@@ -149,7 +149,7 @@ data class NewFriendEventData(
 ) : NoticeEventData
 
 
-data class GroupMessageRecallEventData(
+data class GroupMessageRecallNoticeEventData(
     override val time: Long,
     override val selfID: Long,
 
@@ -166,7 +166,7 @@ data class GroupMessageRecallEventData(
 ) : NoticeEventData
 
 
-data class FriendMessageRecallEventData(
+data class FriendMessageRecallNoticeEventData(
     override val time: Long,
     override val selfID: Long,
 
@@ -181,7 +181,7 @@ data class FriendMessageRecallEventData(
 ) : NoticeEventData
 
 
-data class GroupPokeEventData(
+data class GroupPokeNoticeEventData(
     override val time: Long,
     override val selfID: Long,
 
@@ -199,7 +199,7 @@ data class GroupPokeEventData(
 ) : NoticeEventData
 
 
-data class GroupRedPacketLuckyKingEventData(
+data class GroupRedPacketLuckyKingNoticeEventData(
     override val time: Long,
     override val selfID: Long,
 
@@ -219,7 +219,7 @@ data class GroupRedPacketLuckyKingEventData(
 ) : NoticeEventData
 
 
-data class GroupMemberHonorChangedEventData(
+data class GroupMemberHonorChangedNoticeEventData(
     override val time: Long,
     override val selfID: Long,
 
@@ -242,16 +242,16 @@ object NoticeEventDataDeserializer : StdDeserializer<NoticeEventData>(NoticeEven
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): NoticeEventData {
         val node = p.readValueAsTree<ObjectNode>()
         return when (val noticeType = node.getNotNull(NOTICE_TYPE).asText()) {
-            GROUP_UPLOAD -> node.deserializeTo<GroupFileUploadEventData>(ctxt)
-            GROUP_ADMIN -> node.deserializeTo<GroupAdminChangedEventData>(ctxt)
-            GROUP_DECREASE, GROUP_INCREASE -> node.deserializeTo<GroupMemberChangedEventData>(ctxt)
-            GROUP_BAN -> node.deserializeTo<GroupMuteEventData>(ctxt)
+            GROUP_UPLOAD -> node.deserializeTo<GroupFileUploadNoticeEventData>(ctxt)
+            GROUP_ADMIN -> node.deserializeTo<GroupAdminChangedNoticeEventData>(ctxt)
+            GROUP_DECREASE, GROUP_INCREASE -> node.deserializeTo<GroupMemberChangedNoticeEventData>(ctxt)
+            GROUP_BAN -> node.deserializeTo<GroupMuteNoticeEventData>(ctxt)
             FRIEND_ADD -> node.deserializeTo<NewFriendEventData>(ctxt)
-            GROUP_RECALL -> node.deserializeTo<GroupMessageRecallEventData>(ctxt)
-            FRIEND_RECALL -> node.deserializeTo<FriendMessageRecallEventData>(ctxt)
-            GROUP_POKE -> node.deserializeTo<GroupPokeEventData>(ctxt)
-            LUCKY_KING -> node.deserializeTo<GroupRedPacketLuckyKingEventData>(ctxt)
-            HONOR -> node.deserializeTo<GroupMemberHonorChangedEventData>(ctxt)
+            GROUP_RECALL -> node.deserializeTo<GroupMessageRecallNoticeEventData>(ctxt)
+            FRIEND_RECALL -> node.deserializeTo<FriendMessageRecallNoticeEventData>(ctxt)
+            GROUP_POKE -> node.deserializeTo<GroupPokeNoticeEventData>(ctxt)
+            LUCKY_KING -> node.deserializeTo<GroupRedPacketLuckyKingNoticeEventData>(ctxt)
+            HONOR -> node.deserializeTo<GroupMemberHonorChangedNoticeEventData>(ctxt)
             else -> throw IllegalArgumentException("Unexpected notice type: $noticeType")
         }
     }

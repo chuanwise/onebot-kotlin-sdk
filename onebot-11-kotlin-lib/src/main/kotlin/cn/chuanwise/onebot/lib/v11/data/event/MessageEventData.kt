@@ -92,16 +92,11 @@ data class PrivateMessageEventData(
     override val rawMessage: String,
     override val font: Int,
     override val sender: PrivateSenderData
-) : MessageEventData, QuickOperation<PrivateMessageEventMessageQuickOperationData>
+) : MessageEventData
 
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy::class)
 interface QuickOperationData
-
-/**
- * Mark classes that can be used as quick operations.
- */
-interface QuickOperation<T : QuickOperationData>
 
 
 interface MessageQuickOperationData : QuickOperationData {
@@ -140,7 +135,7 @@ data class GroupMessageEventData(
     override val font: Int,
     override val sender: GroupSenderData,
     val anonymous: AnonymousSenderData?
-) : MessageEventData, QuickOperation<GroupMessageMessageMessageQuickOperationData>
+) : MessageEventData
 
 
 data class GroupMessageMessageMessageQuickOperationData(
