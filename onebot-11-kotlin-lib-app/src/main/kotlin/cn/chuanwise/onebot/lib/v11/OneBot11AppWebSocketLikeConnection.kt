@@ -21,9 +21,11 @@ import cn.chuanwise.onebot.lib.AppWebSocketReceivingLoop
 import cn.chuanwise.onebot.lib.Expect
 import cn.chuanwise.onebot.lib.deserializeTo
 import cn.chuanwise.onebot.lib.v11.data.ASYNC_RETCODE
-import cn.chuanwise.onebot.lib.v11.data.BAD_REQUEST_RETCODE
+import cn.chuanwise.onebot.lib.v11.data.BAD_REQUEST_HTTP_RETCODE
+import cn.chuanwise.onebot.lib.v11.data.BAD_REQUEST_WEB_SOCKET_RETCODE
 import cn.chuanwise.onebot.lib.v11.data.SUCCESS_RETCODE
-import cn.chuanwise.onebot.lib.v11.data.UNSUPPORTED_OPERATION_RETCODE
+import cn.chuanwise.onebot.lib.v11.data.UNSUPPORTED_OPERATION_HTTP_RETCODE
+import cn.chuanwise.onebot.lib.v11.data.UNSUPPORTED_OPERATION_WEB_SOCKET_RETCODE
 import cn.chuanwise.onebot.lib.v11.data.action.ActionRequestPack
 import cn.chuanwise.onebot.lib.v11.data.action.ResponseData
 import com.fasterxml.jackson.databind.JsonNode
@@ -43,6 +45,20 @@ enum class CallPolicy(val suffix: String = "") {
     DEFAULT,
     ASYNC("_async"),
     RATE_LIMITED("_rate_limited"),
+}
+
+private fun throwWithHTTPStyleRetCodeWarning(
+    message: String,
+    got: Int,
+    expect: Int,
+    exceptionThrower: (String) -> Nothing
+): Nothing {
+    exceptionThrower(
+        message +
+                "(warning that OneBot implementation returns HTTP-style $got, " +
+                "not standard WebSocket-style $expect, " +
+                "see https://github.com/botuniverse/onebot-11/blob/master/communication/ws.md)."
+    )
 }
 
 suspend fun <P> doCall(
@@ -81,9 +97,17 @@ suspend fun <P> doCall(
 
         return when (resp.retCode) {
             SUCCESS_RETCODE, ASYNC_RETCODE -> resp
-            UNSUPPORTED_OPERATION_RETCODE -> throw UnsupportedOperationException("Unsupported operation.")
-            BAD_REQUEST_RETCODE -> throw IllegalArgumentException("Bad request.")
-            else -> throw IllegalStateException("Unexpected response return code: ${resp.retCode}.")
+            UNSUPPORTED_OPERATION_WEB_SOCKET_RETCODE -> throw UnsupportedOperationException("Unsupported operation.")
+            UNSUPPORTED_OPERATION_HTTP_RETCODE -> throwWithHTTPStyleRetCodeWarning(
+                "Unsupported operation.", resp.retCode, UNSUPPORTED_OPERATION_WEB_SOCKET_RETCODE
+            ) { throw UnsupportedOperationException(it) }
+
+            BAD_REQUEST_WEB_SOCKET_RETCODE -> throw IllegalArgumentException("Bad request.")
+            BAD_REQUEST_HTTP_RETCODE -> throwWithHTTPStyleRetCodeWarning(
+                "Bad request.", resp.retCode, BAD_REQUEST_WEB_SOCKET_RETCODE
+            ) { throw IllegalArgumentException(it) }
+
+            else -> throw NoSuchElementException("Unexpected response return code: ${resp.retCode}.")
         }
     } finally {
         receivingLoop.unregisterChannel(uuid)

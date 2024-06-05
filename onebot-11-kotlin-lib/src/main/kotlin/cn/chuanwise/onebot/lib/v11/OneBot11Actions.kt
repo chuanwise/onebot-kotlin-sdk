@@ -184,4 +184,4 @@ val SET_RESTART = Action<DelayData, Unit>("set_restart")
 val CLEAN_CACHE = Action<Unit, Unit>("clean_cache")
 
 // https://github.com/botuniverse/onebot-11/blob/master/api/hidden.md#handle_quick_operation-%E5%AF%B9%E4%BA%8B%E4%BB%B6%E6%89%A7%E8%A1%8C%E5%BF%AB%E9%80%9F%E6%93%8D%E4%BD%9C
-val HIDDEN_HANDLE_QUICK_OPERATION = Action<HandleQuickOperationData, Unit>("handle_quick_operation")
+val HIDDEN_HANDLE_QUICK_OPERATION = Action<HandleQuickOperationData, Unit>(".handle_quick_operation")
