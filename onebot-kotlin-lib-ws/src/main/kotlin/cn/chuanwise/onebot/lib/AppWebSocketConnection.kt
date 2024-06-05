@@ -22,20 +22,17 @@ import io.github.oshai.kotlinlogging.KLogger
 abstract class AppWebSocketConnection private constructor(
     protected val receivingLoop: AppWebSocketReceivingLoop,
     logger: KLogger,
-    configuration: WebSocketConnectionConfiguration,
-    packBus: PackBus
-) : WebSocketConnection(receivingLoop, logger, configuration, packBus), AppConnection {
+    configuration: WebSocketConnectionConfiguration
+) : WebSocketConnection(receivingLoop, logger, configuration), AppConnection {
 
     constructor(
         objectMapper: ObjectMapper,
         logger: KLogger,
-        configuration: WebSocketConnectionConfiguration,
-        packBus: PackBus
+        configuration: WebSocketConnectionConfiguration
     ) : this(
         AppWebSocketReceivingLoop(objectMapper, logger),
         logger,
-        configuration,
-        packBus
+        configuration
     )
 
     override fun close() {

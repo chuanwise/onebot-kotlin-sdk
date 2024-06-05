@@ -16,15 +16,5 @@
 
 package cn.chuanwise.onebot.lib
 
-import kotlinx.coroutines.CoroutineScope
-
-/**
- * Connection is a bidirectional channel of objects.
- *
- * @author Chuanwise
- */
-interface Connection : AutoCloseable, CoroutineScope {
-    val incomingChannel: IncomingChannel<out Pack, *>
-    val outgoingChannel: OutgoingChannel<out Pack, *>
-    suspend fun <P, R> call(expect: Expect<P, R>, params: P): R
+interface HTTPLikeConnection : Connection {
 }

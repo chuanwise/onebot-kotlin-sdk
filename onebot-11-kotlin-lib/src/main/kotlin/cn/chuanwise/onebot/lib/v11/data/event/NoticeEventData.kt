@@ -162,7 +162,7 @@ data class GroupMessageRecallEventData(
     val groupID: Long,
     val userID: Long,
     val operatorID: Long,
-    val messageID: Long,
+    val messageID: Int,
 ) : NoticeEventData
 
 
@@ -177,7 +177,7 @@ data class FriendMessageRecallEventData(
     override val noticeType: String,
 
     val userID: Long,
-    val messageID: Long,
+    val messageID: Int,
 ) : NoticeEventData
 
 

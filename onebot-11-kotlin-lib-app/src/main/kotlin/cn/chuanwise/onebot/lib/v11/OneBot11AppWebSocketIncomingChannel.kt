@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-package cn.chuanwise.onebot.lib.v11.data
+package cn.chuanwise.onebot.lib.v11
 
-import cn.chuanwise.onebot.lib.ToImplPack
+import cn.chuanwise.onebot.lib.AbstractIncomingChannel
+import cn.chuanwise.onebot.lib.v11.data.event.EventData
+import cn.chuanwise.onebot.lib.v11.data.event.QuickOperationData
+import io.github.oshai.kotlinlogging.KLogger
 
-
-interface OneBot11ToImplPack : ToImplPack
+class OneBot11AppWebSocketIncomingChannel(
+    logger: KLogger,
+) : AbstractIncomingChannel<EventData, QuickOperationData>(logger), OneBot11AppIncomingChannel

@@ -16,11 +16,19 @@
 
 package cn.chuanwise.onebot.lib.v11.data
 
+import cn.chuanwise.onebot.lib.Pack
 import cn.chuanwise.onebot.lib.ToAppPack
+import cn.chuanwise.onebot.lib.ToImplPack
+
+
+interface OneBot11Pack : Pack
+
+interface OneBot11ToImplPack : ToImplPack, OneBot11Pack
+
 
 /**
  * Marked interface for incoming data.
  *
  * @author Chuanwise
  */
-interface OneBot11ToAppPack : ToAppPack
+interface OneBot11ToAppPack : ToAppPack, OneBot11Pack

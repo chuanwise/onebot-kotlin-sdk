@@ -16,5 +16,6 @@
 
 package cn.chuanwise.onebot.lib
 
-abstract class AbstractHTTPAppConnection {
+interface OutgoingChannel<T, R> : AutoCloseable {
+    suspend fun send(t: T): R
 }

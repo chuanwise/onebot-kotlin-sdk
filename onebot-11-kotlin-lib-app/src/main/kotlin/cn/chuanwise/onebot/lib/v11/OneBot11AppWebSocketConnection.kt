@@ -23,22 +23,28 @@ import cn.chuanwise.onebot.lib.DEFAULT_MAX_RECONNECT_ATTEMPTS
 import cn.chuanwise.onebot.lib.DEFAULT_PATH
 import cn.chuanwise.onebot.lib.DEFAULT_RECONNECT_INTERVAL_MILLISECONDS
 import cn.chuanwise.onebot.lib.Expect
+import cn.chuanwise.onebot.lib.OutgoingChannel
+import cn.chuanwise.onebot.lib.Pack
 import cn.chuanwise.onebot.lib.WatchDog
 import cn.chuanwise.onebot.lib.WebSocketConnectionConfiguration
 import cn.chuanwise.onebot.lib.deserializeTo
-import cn.chuanwise.onebot.lib.events
+import cn.chuanwise.onebot.lib.requireConnected
 import cn.chuanwise.onebot.lib.v11.data.ASYNC
 import cn.chuanwise.onebot.lib.v11.data.FAILED
 import cn.chuanwise.onebot.lib.v11.data.OK
-import cn.chuanwise.onebot.lib.v11.data.OneBot11LibModule
-import cn.chuanwise.onebot.lib.v11.data.event.HeartbeatEventData
+import cn.chuanwise.onebot.lib.v11.data.OneBot11ToImplPack
+import cn.chuanwise.onebot.lib.v11.data.action.HandleQuickOperationData
+import cn.chuanwise.onebot.lib.v11.data.event.EventData
+import cn.chuanwise.onebot.lib.v11.utils.getObjectMapper
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.github.oshai.kotlinlogging.KLogger
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.websocket.CloseReason
+import io.ktor.websocket.Frame
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -74,12 +80,22 @@ class OneBot11AppWebSocketConnection private constructor(
     private val objectMapper: ObjectMapper,
     private val logger: KLogger,
     configuration: WebSocketConnectionConfiguration,
-    override val packBus: OneBot11AppPackBus = OneBot11AppPackBus(objectMapper, logger),
-) : AppWebSocketConnection(objectMapper, logger, configuration, packBus), OneBot11AppConnection {
+) : AppWebSocketConnection(objectMapper, logger, configuration), OneBot11AppConnection {
 
-    init {
-        packBus.connection = this
+    override val incomingChannel: OneBot11AppWebSocketIncomingChannel = OneBot11AppWebSocketIncomingChannel(logger)
+
+    private inner class OutgoingChannelImpl : OutgoingChannel<OneBot11ToImplPack, Unit> {
+        override suspend fun send(t: OneBot11ToImplPack) {
+            val text = objectMapper.writeValueAsString(t)
+            val currentSession = session.requireConnected()
+
+            currentSession.send(Frame.Text(text))
+        }
+
+        override fun close() = Unit
     }
+
+    override val outgoingChannel: OutgoingChannel<out Pack, *> = OutgoingChannelImpl()
 
     // enable watch dog when connected and heartbeat interval is set.
     // disable watch dog when disconnected.
@@ -94,7 +110,9 @@ class OneBot11AppWebSocketConnection private constructor(
             val interval = configuration.heartbeatInterval ?: continue
 
             val watchDog = WatchDog(interval)
-            val feederUUID = events<HeartbeatEventData> { watchDog.feed() }
+            val feederUUID = incomingChannel.registerListener(HEARTBEAT_EVENT) {
+                watchDog.feed()
+            }
             val hungryDetector = launch {
                 while (state == State.CONNECTED) {
                     delay(interval)
@@ -109,18 +127,24 @@ class OneBot11AppWebSocketConnection private constructor(
                 await()
             }
 
-            packBus.unregisterHandler(feederUUID)
+            incomingChannel.unregisterListener(feederUUID)
+            hungryDetector.cancel("Disconnected.")
         }
     }
 
     @JvmOverloads
     constructor(
         configuration: WebSocketConnectionConfiguration,
-        objectMapper: ObjectMapper = jacksonObjectMapper().apply {
-            registerModule(OneBot11LibModule())
-        },
+        objectMapper: ObjectMapper = getObjectMapper(),
         logger: KLogger = KotlinLogging.logger { },
     ) : this(objectMapper, logger, configuration)
+
+    override suspend fun onReceive(node: JsonNode) {
+        val event = objectMapper.treeToValue(node, EventData::class.java)
+        incomingChannel.income(event)?.let {
+            call(HIDDEN_HANDLE_QUICK_OPERATION, HandleQuickOperationData(event, it))
+        }
+    }
 
     @Suppress("UNCHECKED_CAST")
     override suspend fun <P, R> call(expect: Expect<P, R>, params: P): R {

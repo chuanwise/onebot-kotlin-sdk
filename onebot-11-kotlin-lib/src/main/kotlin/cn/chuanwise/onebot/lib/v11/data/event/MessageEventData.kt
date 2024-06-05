@@ -38,7 +38,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 interface MessageEventData : EventData {
     val messageType: String
     val subType: String
-    val messageID: Long
+    val messageID: Int
     val userID: Long
     val message: MessageData
     val rawMessage: String
@@ -86,26 +86,34 @@ data class PrivateMessageEventData(
     override val messageType: String,
     override val subType: String,
 
-    override val messageID: Long,
+    override val messageID: Int,
     override val userID: Long,
     override val message: MessageData,
     override val rawMessage: String,
     override val font: Int,
     override val sender: PrivateSenderData
-) : MessageEventData
+) : MessageEventData, QuickOperation<PrivateMessageEventMessageQuickOperationData>
 
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy::class)
-interface MessageReceipt {
+interface QuickOperationData
+
+/**
+ * Mark classes that can be used as quick operations.
+ */
+interface QuickOperation<T : QuickOperationData>
+
+
+interface MessageQuickOperationData : QuickOperationData {
     val reply: String?
     val autoEscape: Boolean?
 }
 
 
-data class PrivateMessageEventMessageReceipt(
+data class PrivateMessageEventMessageQuickOperationData(
     override val reply: String,
     override val autoEscape: Boolean
-) : MessageReceipt
+) : MessageQuickOperationData
 
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy::class)
@@ -123,7 +131,7 @@ data class GroupMessageEventData(
     override val messageType: String,
 
     override val subType: String,
-    override val messageID: Long,
+    override val messageID: Int,
 
     val groupID: Long,
     override val userID: Long,
@@ -132,10 +140,10 @@ data class GroupMessageEventData(
     override val font: Int,
     override val sender: GroupSenderData,
     val anonymous: AnonymousSenderData?
-) : MessageEventData
+) : MessageEventData, QuickOperation<GroupMessageMessageMessageQuickOperationData>
 
 
-data class GroupMessageMessageReceipt(
+data class GroupMessageMessageMessageQuickOperationData(
     override val reply: String,
     override val autoEscape: Boolean,
 
@@ -144,7 +152,7 @@ data class GroupMessageMessageReceipt(
     val kick: Boolean,
     val ban: Boolean,
     val banDuration: Long,
-) : MessageReceipt
+) : MessageQuickOperationData
 
 
 object MessageEventDataDeserializer : StdDeserializer<MessageEventData>(MessageEventData::class.java) {

@@ -16,6 +16,7 @@
 
 package cn.chuanwise.onebot.lib
 
+import com.fasterxml.jackson.databind.JsonNode
 import io.github.oshai.kotlinlogging.KLogger
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
@@ -55,8 +56,7 @@ interface ReverseWebSocketConnectionConfiguration {
 abstract class ReverseWebSocketConnection(
     receivingLoop: WebSocketReceivingLoop,
     logger: KLogger,
-    configuration: ReverseWebSocketConnectionConfiguration,
-    packBus: PackBus
+    configuration: ReverseWebSocketConnectionConfiguration
 ) : WebSocketLikeConnection {
 
     private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
@@ -87,14 +87,13 @@ abstract class ReverseWebSocketConnection(
         host = configuration.host,
         port = configuration.port,
     ) {
-        module(receivingLoop, logger, configuration, packBus)
+        module(receivingLoop, logger, configuration)
     }.start()
 
     private fun Application.module(
         receivingLoop: WebSocketReceivingLoop,
         logger: KLogger,
-        configuration: ReverseWebSocketConnectionConfiguration,
-        packBus: PackBus
+        configuration: ReverseWebSocketConnectionConfiguration
     ) {
         install(WebSockets)
 
@@ -164,7 +163,7 @@ abstract class ReverseWebSocketConnection(
                 }
 
                 try {
-                    receivingLoop(this, packBus)
+                    receivingLoop.receive(this, ::onReceive)
                 } catch (throwable: Throwable) {
                     logger.error(throwable) { "Exception occurred in session" }
                 } finally {
@@ -190,6 +189,8 @@ abstract class ReverseWebSocketConnection(
             }
         }
     }
+
+    protected abstract suspend fun onReceive(node: JsonNode)
 
     override fun await(): ReverseWebSocketConnection {
         lock.write {

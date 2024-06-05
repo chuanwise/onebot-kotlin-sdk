@@ -22,20 +22,17 @@ import io.github.oshai.kotlinlogging.KLogger
 abstract class AppReverseWebSocketConnection private constructor(
     protected val receivingLoop: AppWebSocketReceivingLoop,
     logger: KLogger,
-    configuration: ReverseWebSocketConnectionConfiguration,
-    packBus: PackBus
-) : ReverseWebSocketConnection(receivingLoop, logger, configuration, packBus), AppConnection {
+    configuration: ReverseWebSocketConnectionConfiguration
+) : ReverseWebSocketConnection(receivingLoop, logger, configuration), AppConnection {
 
     constructor(
         objectMapper: ObjectMapper,
         logger: KLogger,
         configuration: ReverseWebSocketConnectionConfiguration,
-        packBus: PackBus
     ) : this(
         AppWebSocketReceivingLoop(objectMapper, logger),
         logger,
         configuration,
-        packBus
     )
 
     override fun close() {

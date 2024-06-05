@@ -16,15 +16,7 @@
 
 package cn.chuanwise.onebot.lib
 
-import kotlinx.coroutines.CoroutineScope
+abstract class HTTPWebHookConnection(
 
-/**
- * Connection is a bidirectional channel of objects.
- *
- * @author Chuanwise
- */
-interface Connection : AutoCloseable, CoroutineScope {
-    val incomingChannel: IncomingChannel<out Pack, *>
-    val outgoingChannel: OutgoingChannel<out Pack, *>
-    suspend fun <P, R> call(expect: Expect<P, R>, params: P): R
+) {
 }

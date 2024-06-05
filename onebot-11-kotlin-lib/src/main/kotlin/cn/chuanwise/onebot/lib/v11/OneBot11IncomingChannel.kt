@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-package cn.chuanwise.onebot.lib
+package cn.chuanwise.onebot.lib.v11
 
-import kotlinx.coroutines.CoroutineScope
+import cn.chuanwise.onebot.lib.IncomingChannel
+import cn.chuanwise.onebot.lib.v11.data.OneBot11Pack
+import cn.chuanwise.onebot.lib.v11.data.OneBot11ToImplPack
 
-/**
- * Connection is a bidirectional channel of objects.
- *
- * @author Chuanwise
- */
-interface Connection : AutoCloseable, CoroutineScope {
-    val incomingChannel: IncomingChannel<out Pack, *>
-    val outgoingChannel: OutgoingChannel<out Pack, *>
-    suspend fun <P, R> call(expect: Expect<P, R>, params: P): R
-}
+interface OneBot11IncomingChannel<T : OneBot11Pack, R> : IncomingChannel<T, R>
+
+
+interface OneBot11ImplIncomingChannel<T : OneBot11ToImplPack, R : Any> : OneBot11IncomingChannel<T, R>
+

@@ -20,23 +20,3 @@ package cn.chuanwise.onebot.lib
 interface AppConnection : Connection {
 }
 
-// Kotlin-friendly API.
-inline fun <reified T : ToAppPack> AppConnection.events(
-    crossinline listener: suspend (T) -> Any?
-) = packBus.registerHandler {
-    return@registerHandler if (it is T) {
-        listener(it)
-    } else null
-}
-
-// Java-friendly API.
-@Suppress("UNCHECKED_CAST")
-fun <T : ToAppPack> AppConnection.events(
-    eventClass: Class<T>,
-    listener: suspend (T) -> Any?
-) = packBus.registerHandler {
-    if (eventClass.isInstance(it)) {
-        listener(it as T)
-    }
-    null
-}

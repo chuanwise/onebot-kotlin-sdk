@@ -24,15 +24,6 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.contains
-import com.fasterxml.jackson.module.kotlin.convertValue
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-
-/**
- * Just used to convert objects to map.
- */
-private val objectMapper = jacksonObjectMapper()
-
-fun Any.toMap() = objectMapper.convertValue<Map<String, *>>(this)
 
 fun JsonNode.getOptionalNullable(key: String) = get(key)
 

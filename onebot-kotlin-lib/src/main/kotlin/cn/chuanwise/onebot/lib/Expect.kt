@@ -34,22 +34,16 @@ data class Action<P, R>(
     override val respType: TypeReference<R>
 ) : Expect<P, R>
 
-/**
- * Kotlin-friendly API to construct an instance of [Action].
- */
-inline fun <reified P, reified R> Action(name: String) = Action(
-    name, object : TypeReference<P>() {}, object : TypeReference<R>() {}
-)
-
-data class Push<P, R>(
+data class Event<P, R>(
     override val paraType: TypeReference<P>,
     override val respType: TypeReference<R>
 ) : Expect<P, R>
 
-/**
- * Kotlin-friendly API to construct an instance of [Push].
- */
-inline fun <reified P, reified R> Push() = Push(
-    object : TypeReference<P>() {}, object : TypeReference<R>() {}
+inline fun <reified P> Event() = Event(
+    object : TypeReference<P>() {}, object : TypeReference<Unit>() {}
+)
+
+inline fun <reified P, reified R> Action(name: String) = Action(
+    name, object : TypeReference<P>() {}, object : TypeReference<R>() {}
 )
 

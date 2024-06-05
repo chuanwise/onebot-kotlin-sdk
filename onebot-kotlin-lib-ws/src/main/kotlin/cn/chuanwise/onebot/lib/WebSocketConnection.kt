@@ -16,6 +16,7 @@
 
 package cn.chuanwise.onebot.lib
 
+import com.fasterxml.jackson.databind.JsonNode
 import io.github.oshai.kotlinlogging.KLogger
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.websocket.WebSockets
@@ -51,8 +52,7 @@ interface WebSocketConnectionConfiguration {
 abstract class WebSocketConnection(
     receivingLoop: WebSocketReceivingLoop,
     logger: KLogger,
-    configuration: WebSocketConnectionConfiguration,
-    packBus: PackBus
+    configuration: WebSocketConnectionConfiguration
 ) : WebSocketLikeConnection {
 
     private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
@@ -127,7 +127,7 @@ abstract class WebSocketConnection(
                 }
 
                 try {
-                    receivingLoop(this, packBus)
+                    receivingLoop.receive(this, ::onReceive)
                 } catch (throwable: Throwable) {
                     logger.error(throwable) { "Exception occurred in session" }
                 } finally {
@@ -154,6 +154,8 @@ abstract class WebSocketConnection(
             }
         }
     }
+
+    protected abstract suspend fun onReceive(node: JsonNode)
 
     override suspend fun disconnect(reason: CloseReason) {
         val currentSession = session

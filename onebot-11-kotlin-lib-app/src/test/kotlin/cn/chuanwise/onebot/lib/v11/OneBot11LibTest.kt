@@ -32,18 +32,22 @@ import cn.chuanwise.onebot.lib.v11.data.message.ImageData
 import cn.chuanwise.onebot.lib.v11.data.message.RecordData
 import cn.chuanwise.onebot.lib.v11.data.message.SingleMessageData
 import cn.chuanwise.onebot.lib.v11.data.message.TextData
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import cn.chuanwise.onebot.lib.v11.utils.getObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.net.URL
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 
 class OneBot11LibTest {
     companion object {
-        private lateinit var configurations: OneBot11LibTestConfiguration
+        private val objectMapper = getObjectMapper()
+        private val configurations = objectMapper.readValue<OneBot11LibTestConfiguration>(
+            getResourceURL("configurations.json")
+        )
+
         private val logger = KotlinLogging.logger { }
 
         private val appWebSocketConnection: OneBot11AppWebSocketConnection by lazy {
@@ -66,15 +70,6 @@ class OneBot11LibTest {
                 )
             }
             return resourceURL
-        }
-
-        @JvmStatic
-        @BeforeAll
-        fun beforeAll() {
-            val objectMapper = jacksonObjectMapper()
-            configurations = getResourceURL("configurations.json").let {
-                objectMapper.readValue(it, OneBot11LibTestConfiguration::class.java)
-            }
         }
 
         @JvmStatic
@@ -184,7 +179,7 @@ class OneBot11LibTest {
 
     @Test
     fun testGetGroupInfo(): Unit = runBlocking {
-        appConnection.getLoginInfo()
+        val loginInfo = appConnection.getLoginInfo()
     }
 
 
@@ -279,7 +274,6 @@ class OneBot11LibTest {
             userID = configurations.botIsAdminAndOtherIsMember.userID,
             card = ""
         )
-
     }
 
     @Test
@@ -310,7 +304,6 @@ class OneBot11LibTest {
             groupID = group.groupID,
             groupName = group.groupName
         )
-
     }
 
     @Test
@@ -329,7 +322,6 @@ class OneBot11LibTest {
             specialTitle = "TestTitle",
             duration = 3600L
         )
-
     }
 
     @Test

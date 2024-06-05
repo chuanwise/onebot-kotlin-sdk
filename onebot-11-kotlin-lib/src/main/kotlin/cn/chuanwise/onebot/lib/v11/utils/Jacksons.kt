@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-package cn.chuanwise.onebot.lib
+@file:JvmName("Jacksons")
 
-import kotlinx.coroutines.CoroutineScope
+package cn.chuanwise.onebot.lib.v11.utils
 
-/**
- * Connection is a bidirectional channel of objects.
- *
- * @author Chuanwise
- */
-interface Connection : AutoCloseable, CoroutineScope {
-    val incomingChannel: IncomingChannel<out Pack, *>
-    val outgoingChannel: OutgoingChannel<out Pack, *>
-    suspend fun <P, R> call(expect: Expect<P, R>, params: P): R
+import cn.chuanwise.onebot.lib.v11.data.OneBot11LibModule
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+
+fun getObjectMapper() = jacksonObjectMapper().apply {
+    registerModule(OneBot11LibModule())
 }

@@ -34,10 +34,7 @@ import kotlinx.coroutines.launch
  * @author Chuanwise
  */
 interface WebSocketReceivingLoop : AutoCloseable {
-    // Kotlin-friendly API.
-    suspend operator fun invoke(session: DefaultWebSocketSession, packBus: PackBus) = receive(session, packBus)
-
-    suspend fun receive(session: DefaultWebSocketSession, packBus: PackBus)
+    suspend fun receive(session: DefaultWebSocketSession, onReceive: suspend (JsonNode) -> Unit)
 }
 
 /**
@@ -54,7 +51,7 @@ class AppWebSocketReceivingLoop(
 
     private val channels = ConcurrentHashMap<UUID, Channel<JsonNode>>()
 
-    override suspend fun receive(session: DefaultWebSocketSession, packBus: PackBus) {
+    override suspend fun receive(session: DefaultWebSocketSession, onReceive: suspend (JsonNode) -> Unit) {
         for (frame in session.incoming) {
             if (frame !is Frame.Text) {
                 logger.warn { "Unexpected incoming frame: $frame, except `Frame.Text`!" }
@@ -75,7 +72,7 @@ class AppWebSocketReceivingLoop(
                 val optionalEcho = node.getOptionalNotNull(ECHO)
                 if (optionalEcho === null) {
                     // handle events
-                    packBus(node)
+                    onReceive(node)
                 } else {
                     // handle responses
                     val uuid = UUID.fromString(optionalEcho.asText())

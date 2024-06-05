@@ -15,15 +15,14 @@
  */
 
 /**
- * Defined the action of [OneBot 11](https://github.com/botuniverse/onebot-11/blob/master/api/public.md).
+ * Defined the action of [OneBot 11](https://github.com/botuniverse/onebot-11/blob/master/api).
  *
  * Each one is corresponding to an object, which allows to restrict the parameter and response type in
  * compilation time.
  *
  * @author Chuanwise
  */
-@file:JvmName("Call")
-
+@file:JvmName("OneBot11Actions")
 package cn.chuanwise.onebot.lib.v11
 
 import cn.chuanwise.onebot.lib.Action

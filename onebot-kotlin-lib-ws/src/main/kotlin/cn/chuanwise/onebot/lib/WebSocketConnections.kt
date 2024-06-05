@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
+@file:JvmName("WebSocketConnections")
+
 package cn.chuanwise.onebot.lib
 
-import kotlinx.coroutines.CoroutineScope
+import io.ktor.websocket.WebSocketSession
 
-/**
- * Connection is a bidirectional channel of objects.
- *
- * @author Chuanwise
- */
-interface Connection : AutoCloseable, CoroutineScope {
-    val incomingChannel: IncomingChannel<out Pack, *>
-    val outgoingChannel: OutgoingChannel<out Pack, *>
-    suspend fun <P, R> call(expect: Expect<P, R>, params: P): R
+fun WebSocketLikeConnection.requireConnected() = if (!isConnected) {
+    throw IllegalStateException("Connection is not established")
+} else {
+    this
 }
+
+fun WebSocketSession?.requireConnected() = this ?: throw IllegalStateException("Connection is not established")
