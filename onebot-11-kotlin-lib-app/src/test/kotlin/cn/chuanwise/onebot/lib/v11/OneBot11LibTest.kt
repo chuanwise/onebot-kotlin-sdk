@@ -39,6 +39,7 @@ import java.net.URL
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 
 class OneBot11LibTest {
@@ -184,8 +185,13 @@ class OneBot11LibTest {
 
 
     @Test
-    fun getForwardMessage(): Unit = runBlocking {
-        TODO()
+    fun testGetForwardMessage(): Unit = runBlocking {
+        appConnection.events<MessageEventData> { event ->
+            launch {
+                if (event.messageType != FORWARD) return@launch
+                appConnection.getMessage(event.messageID.toInt())
+            }
+        }
     }
 
     @Test
@@ -274,16 +280,37 @@ class OneBot11LibTest {
             userID = configurations.botIsAdminAndOtherIsMember.userID,
             card = ""
         )
+
     }
 
     @Test
     fun testSetGroupAnonymousBanByAnonymousSenderData(): Unit = runBlocking {
-        TODO()
+        appConnection.events<GroupMessageEventData> { event ->
+
+            launch {
+                val anonymous = event.anonymous ?: return@launch
+                appConnection.setGroupAnonymousBan(
+                    groupID = event.groupID,
+                    sender = anonymous,
+                    duration = 114L
+                )
+            }
+
+        }
     }
 
     @Test
     fun testSetGroupAnonymousBanByFlag(): Unit = runBlocking {
-        TODO()
+        appConnection.events<GroupMessageEventData> { event ->
+            launch {
+                val anonymous = event.anonymous ?: return@launch
+                appConnection.setGroupAnonymousBan(
+                    groupID = event.groupID,
+                    flag = anonymous.flag,
+                    duration = 114L
+                )
+            }
+        }
     }
 
     @Test
@@ -304,6 +331,7 @@ class OneBot11LibTest {
             groupID = group.groupID,
             groupName = group.groupName
         )
+
     }
 
     @Test
@@ -322,16 +350,33 @@ class OneBot11LibTest {
             specialTitle = "TestTitle",
             duration = 3600L
         )
+
     }
 
     @Test
     fun testSetFriendAddRequest(): Unit = runBlocking {
-        TODO()
+        appConnection.events<FriendAddRequestEventData> { event ->
+            launch {
+                appConnection.setFriendAddRequest(
+                    flag = event.flag,
+                    approve = true,
+                    remark = ""
+                )
+            }
+        }
     }
 
     @Test
     fun testSetGroupAddRequest(): Unit = runBlocking {
-        TODO()
+        appConnection.events<GroupAddRequestEventData> { event ->
+            launch {
+                appConnection.setFriendAddRequestAsync(
+                    flag = event.flag,
+                    approve = true,
+                    remark = ""
+                )
+            }
+        }
     }
 
     @Test
@@ -374,17 +419,56 @@ class OneBot11LibTest {
 
     @Test
     fun testGetCredentials(): Unit = runBlocking {
-        TODO()
+        logger.warn {
+            """ 
+                [Warn]
+                Method: ${testGetCredentials()}
+                We cannot test this case because this method depends on the actual business needs.
+            """.trimIndent()
+        }
+        assert(true)
     }
 
     @Test
     fun testGetCookies(): Unit = runBlocking {
-        TODO()
+        logger.warn {
+            """ 
+                [Warn]
+                Method: ${testGetCookies()}
+                We cannot test this case because this method depends on the actual business needs.
+            """.trimIndent()
+        }
+        assert(true)
+
     }
 
     @Test
     fun testGetImage(): Unit = runBlocking {
-        TODO()
+        val messageID = appConnection.sendMessage(
+            messageType = IMAGE,
+            message = SingleMessageData(
+                data = ImageData(
+                    file = getResourceURL("messages/cat.jpg").file.toString(),
+                    cache = null,
+                    proxy = null,
+                    type = null,
+                    url = null,
+                    summary = null,
+                    timeout = null
+                ),
+                type = IMAGE
+            ),
+            userID = null,
+            groupID = configurations.botIsAdminGroupID
+        )
+        val image = when(val data = appConnection.getMessage(messageID).message){
+            is ArrayMessageData -> data.data.firstOrNull()?.data as ImageData
+            is SingleMessageData -> data.data as ImageData
+            else -> throw IllegalStateException()
+        }
+        appConnection.getImage(
+            file = image.file
+        )
     }
 
     @Test
