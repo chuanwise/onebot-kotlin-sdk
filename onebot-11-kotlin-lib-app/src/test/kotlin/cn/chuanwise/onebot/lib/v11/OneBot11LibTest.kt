@@ -18,12 +18,15 @@ package cn.chuanwise.onebot.lib.v11
 
 import cn.chuanwise.onebot.lib.AT
 import cn.chuanwise.onebot.lib.FACE
+import cn.chuanwise.onebot.lib.FORWARD
 import cn.chuanwise.onebot.lib.GROUP
 import cn.chuanwise.onebot.lib.IMAGE
 import cn.chuanwise.onebot.lib.PRIVATE
 import cn.chuanwise.onebot.lib.RECORD
 import cn.chuanwise.onebot.lib.TEXT
 import cn.chuanwise.onebot.lib.awaitUtilConnected
+import cn.chuanwise.onebot.lib.v11.data.event.FriendAddRequestQuickOperationData
+import cn.chuanwise.onebot.lib.v11.data.event.GroupMessageMessageMessageQuickOperationData
 import cn.chuanwise.onebot.lib.v11.data.message.ArrayMessageData
 import cn.chuanwise.onebot.lib.v11.data.message.AtData
 import cn.chuanwise.onebot.lib.v11.data.message.CQCodeMessageData
@@ -39,7 +42,6 @@ import java.net.URL
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 
 class OneBot11LibTest {
@@ -186,11 +188,9 @@ class OneBot11LibTest {
 
     @Test
     fun testGetForwardMessage(): Unit = runBlocking {
-        appConnection.events<MessageEventData> { event ->
-            launch {
-                if (event.messageType != FORWARD) return@launch
-                appConnection.getMessage(event.messageID.toInt())
-            }
+        appConnection.incomingChannel.registerListenerWithoutQuickOperation(MESSAGE_EVENT) {
+            if (it.messageType != FORWARD) return@registerListenerWithoutQuickOperation
+            appConnection.getMessage(it.messageID)
         }
     }
 
@@ -284,32 +284,38 @@ class OneBot11LibTest {
     }
 
     @Test
-    fun testSetGroupAnonymousBanByAnonymousSenderData(): Unit = runBlocking {
-        appConnection.events<GroupMessageEventData> { event ->
-
-            launch {
-                val anonymous = event.anonymous ?: return@launch
-                appConnection.setGroupAnonymousBan(
-                    groupID = event.groupID,
-                    sender = anonymous,
-                    duration = 114L
+    fun testSetGroupAnonymousBanByQuickOperation(): Unit = runBlocking {
+        appConnection.incomingChannel.registerListenerWithQuickOperation(GROUP_MESSAGE_EVENT) {
+            it.anonymous?.let {
+                GroupMessageMessageMessageQuickOperationData(
+                    ban = true,
+                    banDuration = 114L
                 )
             }
+        }
+    }
 
+    @Test
+    fun testSetGroupAnonymousBanByAnonymousSenderData(): Unit = runBlocking {
+        appConnection.incomingChannel.registerListenerWithoutQuickOperation(GROUP_MESSAGE_EVENT) {
+            val anonymous = it.anonymous ?: return@registerListenerWithoutQuickOperation
+            appConnection.setGroupAnonymousBan(
+                groupID = it.groupID,
+                sender = anonymous,
+                duration = 114L
+            )
         }
     }
 
     @Test
     fun testSetGroupAnonymousBanByFlag(): Unit = runBlocking {
-        appConnection.events<GroupMessageEventData> { event ->
-            launch {
-                val anonymous = event.anonymous ?: return@launch
-                appConnection.setGroupAnonymousBan(
-                    groupID = event.groupID,
-                    flag = anonymous.flag,
-                    duration = 114L
-                )
-            }
+        appConnection.incomingChannel.registerListenerWithoutQuickOperation(GROUP_MESSAGE_EVENT) {
+            val anonymous = it.anonymous ?: return@registerListenerWithoutQuickOperation
+            appConnection.setGroupAnonymousBan(
+                groupID = it.groupID,
+                flag = anonymous.flag,
+                duration = 114L
+            )
         }
     }
 
@@ -354,28 +360,21 @@ class OneBot11LibTest {
     }
 
     @Test
-    fun testSetFriendAddRequest(): Unit = runBlocking {
-        appConnection.events<FriendAddRequestEventData> { event ->
-            launch {
-                appConnection.setFriendAddRequest(
-                    flag = event.flag,
-                    approve = true,
-                    remark = ""
-                )
-            }
+    fun testSetFriendAddRequestByQuickOperation(): Unit = runBlocking {
+        appConnection.incomingChannel.registerListenerWithQuickOperation(FRIEND_ADD_REQUEST_EVENT) {
+            FriendAddRequestQuickOperationData(
+                approve = true,
+            )
         }
     }
 
     @Test
-    fun testSetGroupAddRequest(): Unit = runBlocking {
-        appConnection.events<GroupAddRequestEventData> { event ->
-            launch {
-                appConnection.setFriendAddRequestAsync(
-                    flag = event.flag,
-                    approve = true,
-                    remark = ""
-                )
-            }
+    fun testSetFriendAddRequestByFlag(): Unit = runBlocking {
+        appConnection.incomingChannel.registerListenerWithoutQuickOperation(FRIEND_ADD_REQUEST_EVENT) {
+            appConnection.setFriendAddRequest(
+                flag = it.flag,
+                approve = true
+            )
         }
     }
 
