@@ -106,8 +106,8 @@ interface MessageQuickOperationData : QuickOperationData {
 
 
 data class PrivateMessageEventMessageQuickOperationData(
-    override val reply: String,
-    override val autoEscape: Boolean
+    override val reply: String? = null,
+    override val autoEscape: Boolean? = null
 ) : MessageQuickOperationData
 
 
@@ -139,14 +139,14 @@ data class GroupMessageEventData(
 
 
 data class GroupMessageMessageMessageQuickOperationData(
-    override val reply: String,
-    override val autoEscape: Boolean,
+    override val reply: String? = null,
+    override val autoEscape: Boolean? = null,
 
-    val atSender: Boolean,
-    val delete: Boolean,
-    val kick: Boolean,
-    val ban: Boolean,
-    val banDuration: Long,
+    val atSender: Boolean? = null,
+    val delete: Boolean? = null,
+    val kick: Boolean? = null,
+    val ban: Boolean? = null,
+    val banDuration: Long? = null,
 ) : MessageQuickOperationData
 
 

@@ -28,7 +28,8 @@ package cn.chuanwise.onebot.lib.v11
 
 import cn.chuanwise.onebot.lib.Event
 import cn.chuanwise.onebot.lib.v11.data.event.EventData
-import cn.chuanwise.onebot.lib.v11.data.event.FriendAddRequestNoticeEventData
+import cn.chuanwise.onebot.lib.v11.data.event.FriendAddNoticeEventData
+import cn.chuanwise.onebot.lib.v11.data.event.FriendAddRequestEventData
 import cn.chuanwise.onebot.lib.v11.data.event.FriendAddRequestQuickOperationData
 import cn.chuanwise.onebot.lib.v11.data.event.FriendMessageRecallNoticeEventData
 import cn.chuanwise.onebot.lib.v11.data.event.GroupAddRequestEventData
@@ -46,6 +47,7 @@ import cn.chuanwise.onebot.lib.v11.data.event.GroupRedPacketLuckyKingNoticeEvent
 import cn.chuanwise.onebot.lib.v11.data.event.HeartbeatEventData
 import cn.chuanwise.onebot.lib.v11.data.event.LifecycleMetaEventData
 import cn.chuanwise.onebot.lib.v11.data.event.MessageEventData
+import cn.chuanwise.onebot.lib.v11.data.event.MessageQuickOperationData
 import cn.chuanwise.onebot.lib.v11.data.event.MetaEventData
 import cn.chuanwise.onebot.lib.v11.data.event.NoticeEventData
 import cn.chuanwise.onebot.lib.v11.data.event.PrivateMessageEventData
@@ -67,7 +69,7 @@ val HEARTBEAT_META_EVENT = Event<HeartbeatEventData>()
 val LIFECYCLE_META_EVENT = Event<LifecycleMetaEventData>()
 
 // https://github.com/botuniverse/onebot-11/blob/master/event/message.md
-val MESSAGE_EVENT = Event<MessageEventData>()
+val MESSAGE_EVENT = EventWithQuickOperation<MessageEventData, MessageQuickOperationData>()
 
 // https://github.com/botuniverse/onebot-11/blob/master/event/message.md#%E7%A7%81%E8%81%8A%E6%B6%88%E6%81%AF
 val PRIVATE_MESSAGE_EVENT =
@@ -93,7 +95,7 @@ val GROUP_MEMBER_CHANGED_NOTICE_EVENT = Event<GroupMemberChangedNoticeEventData>
 val GROUP_MUTE_NOTICE_EVENT = Event<GroupMuteNoticeEventData>()
 
 // https://github.com/botuniverse/onebot-11/blob/master/event/notice.md#%E5%A5%BD%E5%8F%8B%E6%B7%BB%E5%8A%A0
-val FRIEND_ADD_REQUEST_NOTICE_EVENT = Event<FriendAddRequestNoticeEventData>()
+val FRIEND_ADD_NOTICE_EVENT = Event<FriendAddNoticeEventData>()
 
 // https://github.com/botuniverse/onebot-11/blob/master/event/notice.md#%E7%BE%A4%E6%B6%88%E6%81%AF%E6%92%A4%E5%9B%9E
 val GROUP_MESSAGE_RECALL_NOTICE_EVENT = Event<GroupMessageRecallNoticeEventData>()
@@ -115,7 +117,7 @@ val REQUEST_EVENT = Event<RequestEventData>()
 
 // https://github.com/botuniverse/onebot-11/blob/master/event/request.md#%E5%8A%A0%E5%A5%BD%E5%8F%8B%E8%AF%B7%E6%B1%82
 val FRIEND_ADD_REQUEST_EVENT =
-    EventWithQuickOperation<FriendAddRequestNoticeEventData, FriendAddRequestQuickOperationData>()
+    EventWithQuickOperation<FriendAddRequestEventData, FriendAddRequestQuickOperationData>()
 
 // https://github.com/botuniverse/onebot-11/blob/master/event/request.md#%E5%8A%A0%E7%BE%A4%E8%AF%B7%E6%B1%82%E9%82%80%E8%AF%B7
 val GROUP_ADD_REQUEST_EVENT = EventWithQuickOperation<GroupAddRequestEventData, GroupAddRequestQuickOperationData>()

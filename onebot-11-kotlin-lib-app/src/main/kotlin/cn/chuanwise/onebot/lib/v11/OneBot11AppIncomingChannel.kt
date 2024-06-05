@@ -44,7 +44,7 @@ inline fun <reified T : OneBot11ToAppPack, R : QuickOperationData> OneBot11AppIn
 }
 
 inline fun <reified T : OneBot11ToAppPack, R : QuickOperationData> OneBot11AppIncomingChannel.registerListenerWithQuickOperation(
-    event: Event<T, R>, crossinline action: suspend (T) -> R
+    event: Event<T, R>, crossinline action: suspend (T) -> R?
 ) = registerListener {
     if (T::class.isInstance(it)) {
         return@registerListener action(it as T)

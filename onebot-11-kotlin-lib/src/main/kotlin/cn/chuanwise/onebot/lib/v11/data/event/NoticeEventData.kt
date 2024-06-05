@@ -135,7 +135,7 @@ data class GroupMuteNoticeEventData(
 ) : NoticeEventData
 
 
-data class NewFriendEventData(
+data class FriendAddNoticeEventData(
     override val time: Long,
     override val selfID: Long,
 
@@ -246,7 +246,7 @@ object NoticeEventDataDeserializer : StdDeserializer<NoticeEventData>(NoticeEven
             GROUP_ADMIN -> node.deserializeTo<GroupAdminChangedNoticeEventData>(ctxt)
             GROUP_DECREASE, GROUP_INCREASE -> node.deserializeTo<GroupMemberChangedNoticeEventData>(ctxt)
             GROUP_BAN -> node.deserializeTo<GroupMuteNoticeEventData>(ctxt)
-            FRIEND_ADD -> node.deserializeTo<NewFriendEventData>(ctxt)
+            FRIEND_ADD -> node.deserializeTo<FriendAddNoticeEventData>(ctxt)
             GROUP_RECALL -> node.deserializeTo<GroupMessageRecallNoticeEventData>(ctxt)
             FRIEND_RECALL -> node.deserializeTo<FriendMessageRecallNoticeEventData>(ctxt)
             GROUP_POKE -> node.deserializeTo<GroupPokeNoticeEventData>(ctxt)

@@ -37,7 +37,7 @@ interface RequestEventData : EventData {
 }
 
 
-data class FriendAddRequestNoticeEventData(
+data class FriendAddRequestEventData(
     override val time: Long,
     override val selfID: Long,
 
@@ -55,7 +55,7 @@ data class FriendAddRequestNoticeEventData(
 
 data class FriendAddRequestQuickOperationData(
     val approve: Boolean?,
-    val remark: String?
+    val remark: String? = null
 ) : QuickOperationData
 
 data class GroupAddRequestEventData(
@@ -79,7 +79,7 @@ data class GroupAddRequestEventData(
 
 data class GroupAddRequestQuickOperationData(
     val approve: Boolean?,
-    val reason: String?
+    val reason: String? = null
 ) : QuickOperationData
 
 
@@ -88,7 +88,7 @@ object RequestEventDataDeserializer : StdDeserializer<RequestEventData>(RequestE
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): RequestEventData {
         val node = p.readValueAsTree<ObjectNode>()
         return when (val requestType = node.getNotNull(REQUEST_TYPE).asText()) {
-            FRIEND -> node.deserializeTo<FriendAddRequestNoticeEventData>(ctxt)
+            FRIEND -> node.deserializeTo<FriendAddRequestEventData>(ctxt)
             GROUP -> node.deserializeTo<GroupAddRequestEventData>(ctxt)
             else -> throw IllegalArgumentException("Unexpected request type: $requestType")
         }

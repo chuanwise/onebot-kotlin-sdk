@@ -528,7 +528,7 @@ suspend fun OneBot11AppConnection.setGroupSpecialTitleRateLimited(
 /**
  * @see [SET_FRIEND_ADD_REQUEST]
  */
-suspend fun OneBot11AppConnection.setFriendAddRequest(flag: String, approve: Boolean, remark: String) = call(
+suspend fun OneBot11AppConnection.setFriendAddRequest(flag: String, approve: Boolean, remark: String? = null) = call(
     SET_FRIEND_ADD_REQUEST, SetFriendAddRequestData(
         flag = flag,
         approve = approve,
@@ -536,7 +536,8 @@ suspend fun OneBot11AppConnection.setFriendAddRequest(flag: String, approve: Boo
     )
 )
 
-suspend fun OneBot11AppConnection.setFriendAddRequestAsync(flag: String, approve: Boolean, remark: String) = callAsync(
+suspend fun OneBot11AppConnection.setFriendAddRequestAsync(flag: String, approve: Boolean, remark: String? = null) =
+    callAsync(
     SET_FRIEND_ADD_REQUEST, SetFriendAddRequestData(
         flag = flag,
         approve = approve,
@@ -544,7 +545,11 @@ suspend fun OneBot11AppConnection.setFriendAddRequestAsync(flag: String, approve
     )
 )
 
-suspend fun OneBot11AppConnection.setFriendAddRequestRateLimited(flag: String, approve: Boolean, remark: String) =
+suspend fun OneBot11AppConnection.setFriendAddRequestRateLimited(
+    flag: String,
+    approve: Boolean,
+    remark: String? = null
+) =
     callRateLimited(
         SET_FRIEND_ADD_REQUEST, SetFriendAddRequestData(
             flag = flag,
