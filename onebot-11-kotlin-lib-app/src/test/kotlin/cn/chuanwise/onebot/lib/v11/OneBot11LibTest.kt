@@ -425,7 +425,7 @@ class OneBot11LibTest {
         logger.warn {
             """ 
                 [Warn]
-                Method: ${testGetCredentials()}
+                Method: testGetCredentials()
                 We cannot test this case because this method depends on the actual business needs.
             """.trimIndent()
         }
@@ -437,7 +437,7 @@ class OneBot11LibTest {
         logger.warn {
             """ 
                 [Warn]
-                Method: ${testGetCookies()}
+                Method: testGetCookies()
                 We cannot test this case because this method depends on the actual business needs.
             """.trimIndent()
         }
